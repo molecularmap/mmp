@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>MolecularMap — The Universal Molecular Knowledge Graph</title>
+  <meta name="description" content="Explore 100M+ molecules and their relationships. The foundational map for molecular AI.">
+  <style>
+    :root {
+      --primary: #0f766e; /* Teal - science */
+      --dark: #083344;
+      --light-bg: #f0fdfa;
+    }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      margin: 0;
+      background: white;
+      color: #1e293b;
+    }
+    .hero {
+      background: linear-gradient(135deg, #0f766e 0%, #083344 100%);
+      color: white;
+      padding: 4rem 2rem;
+      text-align: center;
+    }
+    .hero h1 {
+      font-size: 2.8rem;
+      max-width: 900px;
+      margin: 0 auto 1rem;
+    }
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin: 2rem 0;
+      flex-wrap: wrap;
+    }
+    .stat-box {
+      background: rgba(255,255,255,0.1);
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+    }
+    .search-box {
+      max-width: 600px;
+      margin: 2rem auto;
+      display: flex;
+      gap: 0.5rem;
+    }
+    .search-box input {
+      flex: 1;
+      padding: 0.8rem;
+      border: none;
+      border-radius: 4px 0 0 4px;
+    }
+    .search-box button {
+      background: white;
+      color: var(--primary);
+      border: none;
+      padding: 0 1.5rem;
+      border-radius: 0 4px 4px 0;
+      font-weight: bold;
+    }
+    .features {
+      max-width: 1000px;
+      margin: 3rem auto;
+      padding: 0 1.5rem;
+    }
+    .feature {
+      display: flex;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+      align-items: flex-start;
+    }
+    .feature-icon {
+      background: var(--light-bg);
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="hero">
+    <h1>🌌 MolecularMap: The Universal Molecular Knowledge Graph</h1>
+    <p style="max-width: 700px; margin: 0 auto 1.5rem; opacity: 0.9;">
+      Mapping every known molecule and its relationships — from water to DNA — 
+      to power the future of molecular AI, drug discovery, and synthetic biology.
+    </p>
+    
+    <div class="stats">
+      <div class="stat-box">
+        <div style="font-size: 1.8rem; font-weight: bold;">100M+</div>
+        <div>Molecules</div>
+      </div>
+      <div class="stat-box">
+        <div style="font-size: 1.8rem; font-weight: bold;">1B+</div>
+        <div>Relationships</div>
+      </div>
+      <div class="stat-box">
+        <div style="font-size: 1.8rem; font-weight: bold;">Open</div>
+        <div>For AI Training</div>
+      </div>
+    </div>
+
+    <div class="search-box">
+      <input type="text" placeholder="Search SMILES, InChIKey, or molecule name...">
+      <button>Explore</button>
+    </div>
+  </div>
+
+  <div class="features">
+    <div class="feature">
+      <div class="feature-icon">🔬</div>
+      <div>
+        <h3>Universal Molecular Coverage</h3>
+        <p>From small metabolites and drugs to proteins, DNA, RNA, and molecular complexes — all mapped in one knowledge graph.</p>
+      </div>
+    </div>
+    
+    <div class="feature">
+      <div class="feature-icon">🔗</div>
+      <div>
+        <h3>Rich Relationship Mapping</h3>
+        <p>Chemical reactions (solid), biological pathways (dashed), and semantic ontologies (dotted) — all queryable for multimodal AI.</p>
+      </div>
+    </div>
+    
+    <div class="feature">
+      <div class="feature-icon">🔊</div>
+      <div>
+        <h3>Integrated with MolAudioNet</h3>
+        <p>Every molecule includes an audio representation via our patent-pending sonification method — enabling auditory AI training.</p>
+      </div>
+    </div>
+    
+    <div class="feature">
+      <div class="feature-icon"></div>
+      <div>
+        <h3>Built for Molecular AI</h3>
+        <p>Download the full graph in RDF, JSON-LD, or Neo4j format — ready for GNNs, transformers, and multimodal foundation models.</p>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align: center; padding: 3rem 1.5rem; background: var(--light-bg);">
+    <h2 style="margin-bottom: 1rem;">Ready to Map the Molecular Universe?</h2>
+    <p style="max-width: 600px; margin: 0 auto 1.5rem;">
+      Access the dataset, contribute data, or license commercial use.
+    </p>
+    <div>
+      <a href="/datasets" style="background: var(--primary); color: white; text-decoration: none; padding: 0.6rem 1.5rem; border-radius: 6px; margin: 0 0.5rem;">Download Dataset</a>
+      <a href="mailto:research@molecularmap.com" style="background: transparent; border: 2px solid var(--primary); color: var(--primary); text-decoration: none; padding: 0.6rem 1.5rem; border-radius: 6px; margin: 0 0.5rem;">Contribute Data</a>
+    </div>
+  </div>
+
+  <footer style="text-align: center; padding: 2rem; color: #64748b; border-top: 1px solid #e2e8f0;">
+    <p>MolecularMap — The Molecular Facebook | © 2024</p>
+    <p>
+      A project by <a href="https://soundofmolecules.com">Sound of Molecules</a>. 
+      Graph data available under custom license (free for academia, commercial terms available).
+    </p>
+  </footer>
+</body>
+</html>
