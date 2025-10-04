@@ -203,10 +203,168 @@
     </div>
   </div>
 
-  <div class="search-box">
-    <input type="text" placeholder="Search disease, molecule, SMILES, or pathway...">
-    <button>Explore</button>
-  </div>
+<div class="search-box" style="position:relative;">
+  <form method="GET" action="search.php" style="display:flex; gap:0.5rem; width:100%;">
+    <input id="search-input" type="text" name="q" placeholder="Search molecule or disease..." required autocomplete="off">
+    <button type="submit">Explore</button>
+  </form>
+  <ul id="suggestions" style="position:absolute; background:white; border:1px solid #ccc; list-style:none; margin-top:2.5rem; padding:0; width:600px; max-height:300px; overflow-y:auto; z-index:1000; display:none;"></ul>
+</div>
+
+<script>
+const input = document.getElementById("search-input");
+const suggestionsBox = document.getElementById("suggestions");
+let currentIndex = -1;
+
+// Cache helpers
+function getCache(key) {
+  const item = localStorage.getItem(key);
+  if (!item) return null;
+  const parsed = JSON.parse(item);
+  if (Date.now() - parsed.timestamp > 24 * 60 * 60 * 1000) { // expire after 24h
+    localStorage.removeItem(key);
+    return null;
+  }
+  return parsed.data;
+}
+
+function setCache(key, data) {
+  const entry = { timestamp: Date.now(), data };
+  localStorage.setItem(key, JSON.stringify(entry));
+  // limit cache size to 50 keys
+  if (Object.keys(localStorage).length > 50) {
+    const oldestKey = Object.keys(localStorage)
+      .map(k => ({ k, t: JSON.parse(localStorage.getItem(k)).timestamp }))
+      .sort((a, b) => a.t - b.t)[0].k;
+    localStorage.removeItem(oldestKey);
+  }
+}
+
+input.addEventListener("input", async () => {
+  const query = input.value.trim();
+  currentIndex = -1;
+  if (query.length < 2) {
+    suggestionsBox.style.display = "none";
+    return;
+  }
+
+  const cacheKey = `autocomplete_${query.toLowerCase()}`;
+  const cached = getCache(cacheKey);
+  if (cached) {
+    renderSuggestions(cached.molecules, cached.diseases);
+    return;
+  }
+
+  try {
+    // Fetch molecules (PubChem)
+    const pubchemUrl = `https://pubchem.ncbi.nlm.nih.gov/rest/autocomplete/compound/${encodeURIComponent(query)}/json?limit=5`;
+    const pubchemResp = await fetch(pubchemUrl);
+    const pubchemData = await pubchemResp.json();
+
+    // Fetch diseases (MeSH)
+    const meshUrl = `https://id.nlm.nih.gov/mesh/sparql?query=PREFIX%20rdfs:%20<http://www.w3.org/2000/01/rdf-schema#>%20SELECT%20?label%20WHERE%20{?d%20rdfs:label%20?label.%20FILTER(CONTAINS(LCASE(?label),%20"${query.toLowerCase()}"))}%20LIMIT%205&format=JSON`;
+    const meshResp = await fetch(meshUrl);
+    const meshData = await meshResp.json();
+
+    const molecules = pubchemData.dictionary_terms?.compound || [];
+    const diseases = meshData.results?.bindings.map(b => b.label.value) || [];
+
+    renderSuggestions(molecules, diseases);
+    setCache(cacheKey, { molecules, diseases });
+
+  } catch (err) {
+    console.error("Autocomplete error:", err);
+    suggestionsBox.style.display = "none";
+  }
+});
+
+// Render grouped suggestions
+function renderSuggestions(molecules, diseases) {
+  suggestionsBox.innerHTML = "";
+  let hasResults = false;
+
+  if (molecules.length) {
+    const header = document.createElement("li");
+    header.textContent = "🧪 Molecules";
+    header.style.fontWeight = "bold";
+    header.style.background = "#f1f5f9";
+    header.style.padding = "0.5rem";
+    suggestionsBox.appendChild(header);
+
+    molecules.forEach(term => {
+      const li = document.createElement("li");
+      li.textContent = term;
+      li.style.padding = "0.5rem";
+      li.style.cursor = "pointer";
+      li.addEventListener("click", () => {
+        input.value = term;
+        suggestionsBox.style.display = "none";
+      });
+      suggestionsBox.appendChild(li);
+    });
+    hasResults = true;
+  }
+
+  if (diseases.length) {
+    const header = document.createElement("li");
+    header.textContent = "🧬 Diseases";
+    header.style.fontWeight = "bold";
+    header.style.background = "#f1f5f9";
+    header.style.padding = "0.5rem";
+    suggestionsBox.appendChild(header);
+
+    diseases.forEach(term => {
+      const li = document.createElement("li");
+      li.textContent = term;
+      li.style.padding = "0.5rem";
+      li.style.cursor = "pointer";
+      li.addEventListener("click", () => {
+        input.value = term;
+        suggestionsBox.style.display = "none";
+      });
+      suggestionsBox.appendChild(li);
+    });
+    hasResults = true;
+  }
+
+  suggestionsBox.style.display = hasResults ? "block" : "none";
+}
+
+// Keyboard navigation
+input.addEventListener("keydown", (e) => {
+  const items = suggestionsBox.querySelectorAll("li:not([style*='bold'])");
+  if (!items.length) return;
+
+  if (e.key === "ArrowDown") {
+    e.preventDefault();
+    currentIndex = (currentIndex + 1) % items.length;
+    updateSelection(items);
+  } else if (e.key === "ArrowUp") {
+    e.preventDefault();
+    currentIndex = (currentIndex - 1 + items.length) % items.length;
+    updateSelection(items);
+  } else if (e.key === "Enter" && currentIndex >= 0) {
+    e.preventDefault();
+    input.value = items[currentIndex].textContent;
+    suggestionsBox.style.display = "none";
+    input.form.submit();
+  }
+});
+
+function updateSelection(items) {
+  items.forEach((item, idx) => {
+    item.style.background = (idx === currentIndex) ? "#e0f2fe" : "white";
+  });
+}
+
+// Hide suggestions on outside click
+document.addEventListener("click", (e) => {
+  if (!suggestionsBox.contains(e.target) && e.target !== input) {
+    suggestionsBox.style.display = "none";
+  }
+});
+</script>
+
 </div>
 
   <!-- Features -->
