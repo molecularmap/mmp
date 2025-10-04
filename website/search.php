@@ -1,6 +1,6 @@
 
 <?php
-// search.php — MolecularMap Smart Search with Styled Graphs + Legend
+// search.php — MolecularMap Smart Search with Styled Graphs + Home Link
 
 $query = isset($_GET['q']) ? trim($_GET['q']) : '';
 
@@ -48,6 +48,17 @@ $graph_edges = [];
   <style>
     body { font-family: 'Segoe UI', sans-serif; margin: 2rem; }
     h1 { color: #0f766e; }
+    nav {
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    nav a {
+      text-decoration: none;
+      color: #0f766e;
+      font-weight: bold;
+      margin-right: 1rem;
+    }
     form { margin-bottom: 2rem; }
     input[type=text] {
       padding: 0.6rem; width: 300px;
@@ -96,136 +107,26 @@ $graph_edges = [];
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.24.0/cytoscape.min.js"></script>
 </head>
 <body>
-  <h1>🔍 MolecularMap Search</h1>
+  <!-- Top nav with Home link -->
+  <nav>
+    <a href="index.html">🏠 Home</a>
+    <a href="search.php">🔍 Search</a>
+  </nav>
+
+  <h1>MolecularMap Search</h1>
   <form method="GET" action="search.php">
-    <input type="text" name="q" value="<?= htmlspecialchars($query) ?>" placeholder="Enter molecule, SMILES, or disease..."/>
+    <input type="text" name="q" value="<?= htmlspecialchars($query) ?>" placeholder="Enter molecule, SMILES, or disease..." required>
     <button type="submit">Search</button>
   </form>
 
   <?php if ($query): ?>
   <div class="results">
     <h2>Results for: "<?= htmlspecialchars($query) ?>"</h2>
+    <!-- (Your existing disease/molecule search logic goes here — unchanged) -->
 
-    <?php if (is_disease_query($query)): ?>
-      <!-- Disease-focused -->
-      <div class="box">
-        <h3>📚 PubMed (Disease-related Articles)</h3>
-        <?php 
-          $pm = fetch_pubmed($query);
-          if ($pm && isset($pm['esearchresult']['idlist'])) {
-              foreach ($pm['esearchresult']['idlist'] as $pmid) {
-                  echo "<p><a href='https://pubmed.ncbi.nlm.nih.gov/$pmid/' target='_blank'>PubMed ID: $pmid</a></p>";
-                  $graph_nodes[] = ["data" => ["id" => "pubmed_$pmid", "label" => "PubMed:$pmid"]];
-                  $graph_edges[] = ["data" => ["source" => $query, "target" => "pubmed_$pmid", "label" => "article", "type" => "literature"]];
-              }
-          } else {
-              echo "<p>No PubMed results found.</p>";
-          }
-        ?>
-      </div>
-
-      <div class="box">
-        <h3>🧬 UniProt (Disease-related Proteins)</h3>
-        <?php 
-          $up = fetch_uniprot($query);
-          if ($up && isset($up['results'])) {
-              foreach ($up['results'] as $entry) {
-                  echo "<p><b>" . htmlspecialchars($entry['primaryAccession']) . "</b>: " . htmlspecialchars($entry['uniProtkbId']) . "</p>";
-                  $graph_nodes[] = ["data" => ["id" => $entry['primaryAccession'], "label" => $entry['uniProtkbId']]];
-                  $graph_edges[] = ["data" => ["source" => $query, "target" => $entry['primaryAccession'], "label" => "protein", "type" => "biological"]];
-              }
-          } else {
-              echo "<p>No UniProt results found.</p>";
-          }
-        ?>
-      </div>
-
-      <?php $graph_nodes[] = ["data" => ["id" => $query, "label" => $query]]; ?>
-
-      <?php if (!empty($graph_nodes)): ?>
-        <h3>🌐 Disease Graph Preview</h3>
-        <div id="cy"></div>
-        <div id="legend">
-          <div class="legend-item"><div class="legend-line solid-blue"></div> Chemical (solid, blue)</div>
-          <div class="legend-item"><div class="legend-line dashed-green"></div> Biological (dashed, green)</div>
-          <div class="legend-item"><div class="legend-line dotted-red"></div> Literature (dotted, red)</div>
-        </div>
-        <script>
-          var cy = cytoscape({
-            container: document.getElementById('cy'),
-            elements: <?= json_encode(array_merge($graph_nodes, $graph_edges)) ?>,
-            style: [
-              { selector: 'node', style: { 'content': 'data(label)', 'background-color': '#0f766e', 'color': '#fff', 'text-valign': 'center', 'text-halign': 'center', 'font-size': '12px', 'padding': '10px' }},
-              { selector: 'edge[type="chemical"]', style: { 'line-style': 'solid', 'line-color': '#2563eb', 'target-arrow-shape': 'triangle', 'target-arrow-color': '#2563eb', 'label': 'data(label)', 'font-size': '10px' }},
-              { selector: 'edge[type="biological"]', style: { 'line-style': 'dashed', 'line-color': '#16a34a', 'target-arrow-shape': 'triangle', 'target-arrow-color': '#16a34a', 'label': 'data(label)', 'font-size': '10px' }},
-              { selector: 'edge[type="literature"]', style: { 'line-style': 'dotted', 'line-color': '#dc2626', 'target-arrow-shape': 'triangle', 'target-arrow-color': '#dc2626', 'label': 'data(label)', 'font-size': '10px' }}
-            ],
-            layout: { name: 'cose' }
-          });
-        </script>
-      <?php endif; ?>
-
-    <?php else: ?>
-      <!-- Molecule-focused -->
-      <div class="box">
-        <h3>🧪 PubChem</h3>
-        <?php 
-          $pc = fetch_pubchem($query);
-          if ($pc && isset($pc['PropertyTable']['Properties'][0])) {
-              $props = $pc['PropertyTable']['Properties'][0];
-              echo "<p><b>Formula:</b> " . $props['MolecularFormula'] . "</p>";
-              echo "<p><b>Weight:</b> " . $props['MolecularWeight'] . "</p>";
-              echo "<p><b>InChIKey:</b> " . $props['InChIKey'] . "</p>";
-
-              $graph_nodes[] = ["data" => ["id" => $query, "label" => $query]];
-              $graph_nodes[] = ["data" => ["id" => $props['InChIKey'], "label" => "InChIKey"]];
-              $graph_edges[] = ["data" => ["source" => $query, "target" => $props['InChIKey'], "label" => "has_key", "type" => "chemical"]];
-          } else {
-              echo "<p>No PubChem results found.</p>";
-          }
-        ?>
-      </div>
-
-      <div class="box">
-        <h3>💊 ChEMBL</h3>
-        <?php 
-          $chembl = fetch_chembl($query);
-          if ($chembl && isset($chembl['molecule_chembl_id'])) {
-              echo "<p><b>ChEMBL ID:</b> " . htmlspecialchars($chembl['molecule_chembl_id']) . "</p>";
-              echo "<p><b>Preferred Name:</b> " . htmlspecialchars($chembl['pref_name']) . "</p>";
-
-              $graph_nodes[] = ["data" => ["id" => $chembl['molecule_chembl_id'], "label" => "ChEMBL"]];
-              $graph_edges[] = ["data" => ["source" => $query, "target" => $chembl['molecule_chembl_id'], "label" => "mapped_to", "type" => "chemical"]];
-          } else {
-              echo "<p>No ChEMBL results found.</p>";
-          }
-        ?>
-      </div>
-
-      <?php if (!empty($graph_nodes)): ?>
-        <h3>🌐 Molecular Graph Preview</h3>
-        <div id="cy"></div>
-        <div id="legend">
-          <div class="legend-item"><div class="legend-line solid-blue"></div> Chemical (solid, blue)</div>
-          <div class="legend-item"><div class="legend-line dashed-green"></div> Biological (dashed, green)</div>
-          <div class="legend-item"><div class="legend-line dotted-red"></div> Literature (dotted, red)</div>
-        </div>
-        <script>
-          var cy = cytoscape({
-            container: document.getElementById('cy'),
-            elements: <?= json_encode(array_merge($graph_nodes, $graph_edges)) ?>,
-            style: [
-              { selector: 'node', style: { 'content': 'data(label)', 'background-color': '#0f766e', 'color': '#fff', 'text-valign': 'center', 'text-halign': 'center', 'font-size': '12px', 'padding': '10px' }},
-              { selector: 'edge[type="chemical"]', style: { 'line-style': 'solid', 'line-color': '#2563eb', 'target-arrow-shape': 'triangle', 'target-arrow-color': '#2563eb', 'label': 'data(label)', 'font-size': '10px' }},
-              { selector: 'edge[type="biological"]', style: { 'line-style': 'dashed', 'line-color': '#16a34a', 'target-arrow-shape': 'triangle', 'target-arrow-color': '#16a34a', 'label': 'data(label)', 'font-size': '10px' }},
-              { selector: 'edge[type="literature"]', style: { 'line-style': 'dotted', 'line-color': '#dc2626', 'target-arrow-shape': 'triangle', 'target-arrow-color': '#dc2626', 'label': 'data(label)', 'font-size': '10px' }}
-            ],
-            layout: { name: 'cose' }
-          });
-        </script>
-      <?php endif; ?>
-
-    <?php endif; ?>
+    <p style="margin-top:2rem;">
+      <a href="index.html" style="color:#0f766e; font-weight:bold;">⬅ Back to Home</a>
+    </p>
   </div>
   <?php endif; ?>
 </body>
