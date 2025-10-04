@@ -1,0 +1,52 @@
+
+MolecularMap (root)
+│
+├── index.html         → Homepage
+│   ├─ Hero section (AI-first positioning)
+│   ├─ Stats (100M+ molecules target, 1B+ relationships target)
+│   ├─ Features (disease search, curation, relationships, sonification, AI)
+│   ├─ Graph demo (cytoscape.js)
+│   ├─ Call-to-action (Academic vs. Commercial datasets)
+│   └─ Footer (Patents, links, © 2014–2024)
+│
+├── about.html         → About Page
+│   ├─ Mission
+│   ├─ History (founded 2014, growth, AI-first vision)
+│   ├─ Patents & IP (2 awarded + pending portfolio)
+│   ├─ Vision (ImageNet analogy, multimodality, sonification)
+│   └─ Footer links
+│
+├── datasets.html      → Datasets Page
+│   ├─ Intro (academic free, commercial licensed)
+│   ├─ Academic Access (download sample dataset)
+│   ├─ Commercial Licensing (request via email)
+│   ├─ Future Releases (100M+, pathways, spectra, ancient medicine)
+│   └─ Footer links
+│
+├── contribute.html    → Contribute Data Page
+│   ├─ What You Can Contribute (structures, pathways, spectra, disease links)
+│   ├─ Guidelines (academic vs. commercial)
+│   ├─ Contribution Form (mailto:contribute@molecularmap.com)
+│   └─ Footer links
+│
+├── api.html           → Developers / API Page
+│   ├─ Planned Features (REST queries, graph queries, ML-ready exports)
+│   ├─ Data Formats (JSON, RDF, Neo4j, CSV)
+│   ├─ Example Queries (GET /api/molecule, /api/pathways, /api/dataset)
+│   ├─ “Coming Soon” Box (early access contact)
+│   └─ Footer links
+│
+├── search.php         → Search Page (future vertical AI agent)
+│   ├─ Input box (from homepage hero)
+│   ├─ Meta-search (Google, PubChem, ChEMBL, UniProt, KEGG, PubMed, etc.)
+│   └─ Future: replace with MolecularMap’s internal AI-curated graph
+│
+├── /downloads/        → Folder for sample datasets
+│   └─ molecularmap-sample.zip (example)
+│
+├── /static/           → Assets folder
+│   └─ molecularmap-preview.png (OpenGraph/Twitter preview image)
+│
+├── /privacy           → Privacy Policy (placeholder)
+└── /license           → Dataset License (placeholder)
+

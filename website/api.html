@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Developers & API — MolecularMap</title>
+  <meta name="description" content="MolecularMap API: programmatic access to molecules, pathways, and AI-ready datasets. Coming soon.">
+  <style>
+    :root {
+      --primary: #0f766e;
+      --light-bg: #f0fdfa;
+    }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      margin: 0;
+      background: white;
+      color: #1e293b;
+      line-height: 1.6;
+    }
+    header {
+      background: linear-gradient(135deg, #0f766e 0%, #083344 100%);
+      color: white;
+      padding: 2rem;
+      text-align: center;
+    }
+    header h1 { margin: 0; }
+    .container {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    h2 {
+      color: #0f766e;
+      margin-top: 2rem;
+    }
+    .coming-soon {
+      background: var(--light-bg);
+      border: 1px dashed #0f766e;
+      padding: 1rem;
+      border-radius: 6px;
+      text-align: center;
+      margin-top: 1.5rem;
+    }
+    code {
+      background: #f1f5f9;
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+    footer {
+      text-align: center;
+      padding: 2rem;
+      margin-top: 3rem;
+      border-top: 1px solid #e2e8f0;
+      color: #64748b;
+    }
+    footer a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- Nav -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="/index.html" class="logo">MolecularMap</a>
+      <ul class="nav-links">
+        <li><a href="/index.html">Home</a></li>
+        <li><a href="/about.html">About</a></li>
+        <li><a href="/datasets.html">Datasets</a></li>
+        <li><a href="/search.php">Search</a></li>
+        <li><a href="/contribute.html">Contribute Data</a></li>
+        <li><a href="/api.html">Developers / API</a></li>
+        <li><a href="mailto:contact@molecularmap.com">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Header -->
+  <header>
+    <h1>MolecularMap API</h1>
+    <p>Programmatic access to molecules, pathways, and AI-ready datasets.</p>
+  </header>
+
+  <div class="container">
+    <h2>🚀 Planned Features</h2>
+    <ul>
+      <li>Search molecules and properties via REST API (<code>/api/molecule?id=CHEMBL25</code>)</li>
+      <li>Query biological pathways and disease associations (<code>/api/pathways?disease=cancer</code>)</li>
+      <li>Download curated ML-ready datasets in JSON, RDF, or Neo4j formats</li>
+      <li>Access molecular embeddings and AI predictions (future models)</li>
+      <li>Streaming updates for new datasets and literature</li>
+    </ul>
+
+    <h2>📦 Data Formats</h2>
+    <p>
+      The API will provide data in developer-friendly formats:
+    </p>
+    <ul>
+      <li><code>JSON</code> — molecules, properties, relationships</li>
+      <li><code>RDF / JSON-LD</code> — semantic graph representation</li>
+      <li><code>Neo4j dumps</code> — for graph database integration</li>
+      <li><code>CSV</code> — training-ready tables for ML tasks</li>
+    </ul>
+
+    <h2>👩‍💻 Example Queries (Planned)</h2>
+    <pre><code>
+# Search for a molecule by ID
+GET /api/molecule?id=CHEMBL25
+
+# Find pathways related to cancer
+GET /api/pathways?disease=cancer
+
+# Download curated dataset
+GET /api/dataset?type=toxicity&format=json
+    </code></pre>
+
+    <div class="coming-soon">
+      <p><strong>Coming Soon:</strong> API documentation and developer keys will be available in 2025.</p>
+      <p>Interested in early access? <a href="mailto:dev@molecularmap.com">Contact us</a>.</p>
+    </div>
+  </div>
+
+  <footer>
+    <p>MolecularMap — The ImageNet of Molecules | © 2014–2024</p>
+    <p>
+      <a href="/index.html">Home</a> · 
+      <a href="/datasets.html">Datasets</a> · 
+      <a href="/about.html">About</a> · 
+      <a href="/contribute.html">Contribute</a> · 
+      <a href="/api.html">API</a>
+    </p>
+  </footer>
+</body>
+</html>
+
