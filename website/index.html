@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>MolecularMap — The ImageNet of Molecules</title>
+  <meta name="description" content="The AI-ready atlas of molecules, pathways, and life. Curated datasets for research, health, and drug discovery.">
+
+  <!-- SEO / Social -->
+  <meta property="og:title" content="MolecularMap — The ImageNet of Molecules">
+  <meta property="og:description" content="Mapping every molecule and its connections into an AI-ready dataset for health and discovery.">
+  <meta property="og:image" content="/static/molecularmap-preview.png">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <style>
+    :root {
+      --primary: #0f766e; /* Teal - science */
+      --dark: #083344;
+      --light-bg: #f0fdfa;
+    }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      margin: 0;
+      background: white;
+      color: #1e293b;
+    }
+    .hero {
+      background: linear-gradient(135deg, #0f766e 0%, #083344 100%);
+      color: white;
+      padding: 4rem 2rem;
+      text-align: center;
+    }
+    .hero h1 {
+      font-size: 2.8rem;
+      max-width: 900px;
+      margin: 0 auto 1rem;
+    }
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin: 2rem 0;
+      flex-wrap: wrap;
+    }
+    .stat-box {
+      background: rgba(255,255,255,0.1);
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+    }
+    .search-box {
+      max-width: 600px;
+      margin: 2rem auto;
+      display: flex;
+      gap: 0.5rem;
+    }
+    .search-box input {
+      flex: 1;
+      padding: 0.8rem;
+      border: none;
+      border-radius: 4px 0 0 4px;
+    }
+    .search-box button {
+      background: white;
+      color: var(--primary);
+      border: none;
+      padding: 0 1.5rem;
+      border-radius: 0 4px 4px 0;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .features {
+      max-width: 1000px;
+      margin: 3rem auto;
+      padding: 0 1.5rem;
+    }
+    .feature {
+      display: flex;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+      align-items: flex-start;
+    }
+    .feature-icon {
+      background: var(--light-bg);
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 1.5rem;
+    }
+    #graph {
+      width: 100%;
+      height: 400px;
+      margin: 2rem auto;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+    }
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: #64748b;
+      border-top: 1px solid #e2e8f0;
+    }
+    footer a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+    @media (max-width: 600px) {
+      .hero h1 { font-size: 2rem; }
+      .search-box { flex-direction: column; }
+      .search-box input, .search-box button {
+        border-radius: 4px;
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Hero -->
+
+<div class="hero">
+  <h1>🌌 MolecularMap: The ImageNet of Molecules</h1>
+  <p style="max-width: 700px; margin: 0 auto 1.5rem; opacity: 0.9; font-size:1.1rem;">
+    Not just another knowledge graph — MolecularMap transforms raw global chemistry and biology data 
+    into a <strong>curated, AI-ready dataset</strong> for drug discovery, health prediction, and molecular AI.
+  </p>
+  
+  <div class="stats">
+    <div class="stat-box">
+      <div style="font-size: 1.8rem; font-weight: bold;">100M+</div>
+      <div>Molecules (target dataset scale)</div>
+    </div>
+    <div class="stat-box">
+      <div style="font-size: 1.8rem; font-weight: bold;">1B+</div>
+      <div>Relationships (expanding as we integrate data)</div>
+    </div>
+    <div class="stat-box">
+      <div style="font-size: 1.8rem; font-weight: bold;">AI-Ready</div>
+      <div>Curated for Machine Learning</div>
+    </div>
+  </div>
+
+  <div class="search-box">
+    <input type="text" placeholder="Search disease, molecule, SMILES, or pathway...">
+    <button>Explore</button>
+  </div>
+</div>
+
+  <!-- Features -->
+  <div class="features">
+    <div class="feature">
+      <div class="feature-icon">❤️</div>
+      <div>
+        <h3>Disease-Centered Search</h3>
+        <p>Explore molecules through the lens of health and medicine — from Alzheimer’s biomarkers to diabetes drugs — 
+           connecting pathways, compounds, and therapeutic opportunities.</p>
+      </div>
+    </div>
+
+    <div class="feature">
+      <div class="feature-icon">🧹</div>
+      <div>
+        <h3>Curated for Machine Learning</h3>
+        <p>Raw molecular data from across the web is scanned, standardized, and cleaned — 
+           producing AI-ready datasets in JSON, RDF, or graph formats for training modern ML models.</p>
+      </div>
+    </div>
+
+    <div class="feature">
+      <div class="feature-icon">🔗</div>
+      <div>
+        <h3>Multimodal Molecular Relationships</h3>
+        <p>Chemical reactions (solid), biological pathways (dashed), and semantic ontologies (dotted) — 
+           represented in a unified graph that enables reasoning across chemistry, biology, and life sciences.</p>
+      </div>
+    </div>
+
+    <div class="feature">
+      <div class="feature-icon">🔊</div>
+      <div>
+        <h3>Sonified Molecules</h3>
+        <p>Every molecule has an audio fingerprint via our patent-protected sonification methods — 
+           enabling novel auditory AI models and multimodal training beyond text, graphs, and images.</p>
+      </div>
+    </div>
+
+    <div class="feature">
+      <div class="feature-icon">🤖</div>
+      <div>
+        <h3>The ImageNet of Molecules</h3>
+        <p>MolecularMap isn’t just a knowledge graph — it’s the foundational dataset for molecular AI, 
+           built to fuel drug discovery, health prediction, and scientific breakthroughs at global scale.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Graph Demo -->
+  <div id="graph"></div>
+
+  <!-- Call to Action -->
+  <div style="text-align: center; padding: 3rem 1.5rem; background: var(--light-bg);">
+    <h2 style="margin-bottom: 1rem;">Ready to Build AI on the Molecular Universe?</h2>
+    <p style="max-width: 650px; margin: 0 auto 1.5rem; font-size:1.05rem;">
+      MolecularMap provides <strong>curated, AI-ready molecular datasets</strong> for health, drug discovery, and machine learning.  
+      Access is <strong>free for academic and non-profit research</strong>, with <strong>commercial licensing available</strong> 
+      for companies and industry partners.
+    </p>
+    <div>
+      <a href="/datasets" 
+         style="background: var(--primary); color: white; text-decoration: none; padding: 0.6rem 1.5rem; border-radius: 6px; margin: 0 0.5rem;">
+         Download Academic Dataset
+      </a>
+      <a href="mailto:licensing@molecularmap.com" 
+         style="background: transparent; border: 2px solid var(--primary); color: var(--primary); text-decoration: none; padding: 0.6rem 1.5rem; border-radius: 6px; margin: 0 0.5rem;">
+         Request Commercial License
+      </a>
+    </div>
+  </div>
+
+  <!-- Footer -->
+
+<footer>
+  <p>MolecularMap — The ImageNet of Molecules | © 2024</p>
+  <p>
+    A project by <a href="https://soundofmolecules.com">Sound of Molecules</a>.  
+    Graph data available under custom license (<strong>free for academia</strong>, commercial terms available).
+  </p>
+  <p style="margin-top:0.5rem;">
+    Protected by awarded U.S. patents: <br>
+    <strong>US9,018,506 (2015)</strong> — <em>System and method for creating audible sound representations of atoms and molecules</em><br>
+    <strong>US10,381,108 (2019)</strong> — <em>Web search and information aggregation by way of molecular network</em><br>
+    Plus additional pending applications in AI-based molecular analysis, multimodal foundation models, and related innovations — with further filings anticipated.
+  </p>
+  <p>
+    <a href="/privacy">Privacy Policy</a> · 
+    <a href="/license">Dataset License</a> · 
+    <a href="https://github.com/molecularmap">GitHub</a>
+  </p>
+</footer>
+
+  <!-- Cytoscape.js Graph Demo -->
+  <script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
+  <script>
+    // Search redirect
+    document.querySelector('.search-box button').addEventListener('click', () => {
+      const query = document.querySelector('.search-box input').value.trim();
+      if (query) {
+        window.location.href = '/search.php?q=' + encodeURIComponent(query);
+      }
+    });
+
+    // Graph demo
+    const cy = cytoscape({
+      container: document.getElementById('graph'),
+      elements: [
+        { data: { id: 'glucose', label: 'Glucose' } },
+        { data: { id: 'atp', label: 'ATP' } },
+        { data: { id: 'caffeine', label: 'Caffeine' } },
+        { data: { source: 'glucose', target: 'atp' } },
+        { data: { source: 'atp', target: 'caffeine' } }
+      ],
+      style: [
+        { selector: 'node', style: { 'label': 'data(label)', 'background-color': '#0f766e', 'color': '#fff', 'text-valign': 'center', 'text-halign': 'center' }},
+        { selector: 'edge', style: { 'line-color': '#ccc', 'width': 2 }}
+      ],
+      layout: { name: 'circle' }
+    });
+  </script>
+</body>
+</html>
+
