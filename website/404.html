@@ -1,0 +1,123 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Under Construction — MolecularMap</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: #1e293b;
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    .container {
+      max-width: 600px;
+      text-align: center;
+    }
+    .logo {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 2rem;
+      color: #0f172a;
+    }
+    .logo span {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: #1e293b;
+    }
+    p {
+      font-size: 1.15rem;
+      color: #475569;
+      margin-bottom: 2rem;
+    }
+    .progress {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #eef2ff;
+      color: #4f46e5;
+      padding: 0.5rem 1.25rem;
+      border-radius: 20px;
+      font-weight: 600;
+      margin-bottom: 2rem;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      background: #4f46e5;
+      border-radius: 50%;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+    .btn {
+      display: inline-block;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: white;
+      padding: 0.8rem 2rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: transform 0.2s;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+    .molecule-icon {
+      width: 70px;
+      height: 70px;
+      margin: 0 auto 1.5rem;
+      opacity: 0.7;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">Molecular<span>Map</span></div>
+
+    <svg class="molecule-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="12" r="2" fill="#6366f1"/>
+      <circle cx="6" cy="12" r="1.5" fill="#8b5cf6"/>
+      <circle cx="18" cy="12" r="1.5" fill="#8b5cf6"/>
+      <circle cx="12" cy="6" r="1.5" fill="#8b5cf6"/>
+      <circle cx="12" cy="18" r="1.5" fill="#8b5cf6"/>
+      <line x1="7.5" y1="12" x2="10.5" y2="12" stroke="#6366f1" stroke-width="1.5"/>
+      <line x1="13.5" y1="12" x2="16.5" y2="12" stroke="#6366f1" stroke-width="1.5"/>
+      <line x1="12" y1="7.5" x2="12" y2="10.5" stroke="#6366f1" stroke-width="1.5"/>
+      <line x1="12" y1="13.5" x2="12" y2="16.5" stroke="#6366f1" stroke-width="1.5"/>
+    </svg>
+
+    <h1>Page Under Construction</h1>
+    <p>We're actively building this part of MolecularMap — our AI-ready knowledge graph of 100M+ molecules and 1B+ relationships.</p>
+
+    <div class="progress">
+      <span class="dot"></span>
+      Mapping molecules for the future of drug discovery
+    </div>
+
+    <a href="/" class="btn">Return to Homepage</a>
+  </div>
+</body>
+</html>
