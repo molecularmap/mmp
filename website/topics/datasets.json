@@ -1,0 +1,39 @@
+
+[
+  {
+    "id": "ChEMBL",
+    "title": "ChEMBL Bioactivity",
+    "source": "EBI",
+    "type": "Small Molecules / Bioassays",
+    "format": "JSON, CSV",
+    "download": "https://ftp.ebi.ac.uk/pub/databases/chembl/ChEMBLdb/latest/",
+    "api": "https://www.ebi.ac.uk/chembl/ws",
+    "description": "A large-scale database of bioactive molecules with drug-like properties. Includes compound structures, targets, and activity data extracted from literature and patents.",
+    "size": "~2M compounds, ~15M activity records",
+    "use": "QSAR modeling, virtual screening, AI-based drug design."
+  },
+  {
+    "id": "MetaCyc",
+    "title": "MetaCyc Pathways",
+    "source": "SRI International",
+    "type": "Curated Metabolic & Enzymatic Pathways",
+    "format": "BioPAX, RDF",
+    "download": "https://metacyc.org/download.shtml",
+    "description": "Curated database of experimentally elucidated metabolic pathways and enzymes, spanning thousands of organisms. All entries are literature-supported and cross-linked to gene and protein databases.",
+    "size": "~3,000 pathways, 15,000 enzymes",
+    "use": "Metabolic modeling, biochemical pathway AI reasoning."
+  },
+  {
+    "id": "MassBank",
+    "title": "MassBank",
+    "source": "NBDC Japan",
+    "type": "Mass Spectrometry Spectra",
+    "format": "mzML, JSON",
+    "download": "https://massbank.eu/MassBank/Download/",
+    "api": "https://massbank.eu/MassBank/API/",
+    "description": "Comprehensive repository of reference mass spectra for small molecules. Used for spectral matching and compound identification in metabolomics and sonification models.",
+    "size": "~1M spectra, 30K compounds",
+    "use": "Spectral AI models, sonification training, metabolite identification."
+  }
+]
+

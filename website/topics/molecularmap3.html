@@ -1,0 +1,300 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MolecularMap — Multimodal Knowledge Graph</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: #fafafa;
+    margin: 0;
+    color: #1e293b;
+    overflow: hidden;
+  }
+  header {
+    background: linear-gradient(135deg, #2563eb, #15803d);
+    color: white;
+    text-align: center;
+    padding: 1.5rem;
+  }
+  #controls {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background: white;
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    z-index: 5;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  #controls input {
+    padding: 0.4rem 0.6rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    width: 240px;
+  }
+  #controls button {
+    padding: 0.4rem 0.8rem;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  #controls button:hover { background: #1d4ed8; }
+  #graph { width: 100vw; height: 90vh; background: white; }
+  .tooltip {
+    position: absolute;
+    padding: 6px 10px;
+    background: #1e293b;
+    color: white;
+    border-radius: 6px;
+    pointer-events: none;
+    font-size: 0.85rem;
+    opacity: 0;
+  }
+  .legend {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: white;
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    font-size: 0.9rem;
+    line-height: 1.5rem;
+  }
+  .legend span {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    margin-right: 6px;
+  }
+  .legend input { vertical-align: middle; margin-right: 4px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>🧬 MolecularMap Explorer</h1>
+  <p>Visualize relationships across diseases, drugs, nutrients, and pathways — a unified reasoning graph for molecular AI.</p>
+  <a href="index.html" style="color:#a7f3d0;text-decoration:none;">← Back to Home</a>
+</header>
+
+<div id="controls">
+  <input type="text" id="searchBox" placeholder="🔍 Search molecules, pathways, or diseases...">
+  <button onclick="applyFilter()">Filter</button>
+  <button onclick="resetFilter()">Reset</button>
+</div>
+
+<div id="graph"></div>
+<div class="tooltip" id="tooltip"></div>
+
+<div class="legend" id="legend">
+  <div><input type="checkbox" id="chkDisease" checked> <span style="background:#dc2626"></span> Disease</div>
+  <div><input type="checkbox" id="chkDrug" checked> <span style="background:#0ea5e9"></span> Drug</div>
+  <div><input type="checkbox" id="chkNutrient" checked> <span style="background:#eab308"></span> Nutrient</div>
+  <div><input type="checkbox" id="chkPathway" checked> <span style="background:#22c55e"></span> Pathway</div>
+  <div><input type="checkbox" id="chkSemantic" checked> <span style="background:#8b5cf6"></span> Semantic</div>
+</div>
+
+<script>
+const width = window.innerWidth, height = window.innerHeight * 0.9;
+let svg, g, node, link, label, sim, nodes, links, color;
+
+// ====== Example demo data (replace later with JSON fetch) ======
+nodes = [
+  {id:"Alzheimer's Disease"}, {id:"APP"}, {id:"Tau"}, {id:"Curcumin"}, {id:"Resveratrol"}, {id:"Inflammation Pathway"},
+  {id:"Type 2 Diabetes"}, {id:"AMPK"}, {id:"Metformin"}, {id:"Vitamin C"}, {id:"Insulin Pathway"}
+];
+links = [
+  {source:"Alzheimer's Disease",target:"APP"}, {source:"Alzheimer's Disease",target:"Tau"},
+  {source:"APP",target:"Inflammation Pathway"}, {source:"Curcumin",target:"Inflammation Pathway"},
+  {source:"Resveratrol",target:"AMPK"}, {source:"Type 2 Diabetes",target:"AMPK"},
+  {source:"Type 2 Diabetes",target:"Insulin Pathway"}, {source:"Metformin",target:"AMPK"},
+  {source:"Vitamin C",target:"Resveratrol"}, {source:"Metformin",target:"Insulin Pathway"}
+];
+
+// ========== CATEGORY DETECTION ==========
+function detectCategory(name){
+  const n = name.toLowerCase();
+  if (["disease","syndrome","cancer","tumor","infection","alzheimer","diabetes","parkinson"].some(k=>n.includes(k)))
+    return "disease";
+  if (["vitamin","resveratrol","flavonoid","omega","nutrient","food","plant","herbal"].some(k=>n.includes(k)))
+    return "nutrient";
+  if (["drug","compound","metformin","aspirin","ibuprofen","curcumin"].some(k=>n.includes(k)))
+    return "drug";
+  if (["pathway","nf-κb","mtor","ampk","gene","protein"].some(k=>n.includes(k)))
+    return "pathway";
+  return "semantic";
+}
+
+color = d3.scaleOrdinal()
+  .domain(["disease","drug","nutrient","pathway","semantic"])
+  .range(["#f87171","#38bdf8","#facc15","#4ade80","#c084fc"]);
+
+nodes.forEach(n => n.category = detectCategory(n.id));
+
+drawGraph(nodes, links);
+
+function drawGraph(nodes, links){
+  svg = d3.select("#graph").append("svg").attr("width",width).attr("height",height);
+  g = svg.append("g");
+  const tooltip = d3.select("#tooltip");
+
+  svg.call(d3.zoom().scaleExtent([0.3,6]).on("zoom", e => g.attr("transform", e.transform)));
+
+  sim = d3.forceSimulation(nodes)
+    .force("link", d3.forceLink(links).id(d=>d.id).distance(110))
+    .force("charge", d3.forceManyBody().strength(-220))
+    .force("center", d3.forceCenter(width/2,height/2));
+
+  const haloLayer = g.append("g"); // behind all nodes
+  const linkLayer = g.append("g");
+  const nodeLayer = g.append("g");
+  const labelLayer = g.append("g");
+
+  link = linkLayer.selectAll("line").data(links).enter().append("line")
+    .attr("stroke","#cbd5e1").attr("stroke-width",1.5);
+
+  node = nodeLayer.selectAll("circle").data(nodes).enter().append("circle")
+    .attr("r",8)
+    .attr("fill",d=>color(d.category))
+    .attr("stroke",d=>d.category==="disease"?"#dc2626":"white")
+    .attr("stroke-width",d=>d.category==="disease"?3:1.5)
+    .on("mouseover",(e,d)=>{
+      tooltip.transition().style("opacity",1);
+      tooltip.html(`<strong>${d.id}</strong><br>Category: ${d.category}`)
+             .style("left",(e.pageX+10)+"px")
+             .style("top",(e.pageY-20)+"px");
+      // brighten halo of this category
+      halos.filter(h=>h[0]===d.category).transition().attr("opacity",0.2);
+    })
+    .on("mouseout",(e,d)=>{
+      tooltip.transition().style("opacity",0);
+      halos.transition().attr("opacity",0.08);
+    })
+    .on("click",(e,d)=>{
+      const name = d.id.toLowerCase();
+      const diseaseKeywords = ["disease","syndrome","cancer","tumor","alzheimer","diabetes","parkinson","infection"];
+      if (diseaseKeywords.some(k=>name.includes(k))) {
+        window.open(`disease.html?q=${encodeURIComponent(d.id)}`,"_blank");
+        return;
+      }
+      if (d.url && d.url!=="#") window.open(d.url,"_blank");
+    })
+    .call(d3.drag()
+      .on("start",(e,d)=>{if(!e.active)sim.alphaTarget(0.3).restart();d.fx=d.x;d.fy=d.y;})
+      .on("drag",(e,d)=>{d.fx=e.x;d.fy=e.y;})
+      .on("end",(e,d)=>{if(!e.active)sim.alphaTarget(0);d.fx=null;d.fy=null;}));
+
+  label = labelLayer.selectAll("text").data(nodes).enter().append("text")
+    .attr("font-size","11px").attr("dy",-10).attr("text-anchor","middle")
+    .text(d=>d.id);
+
+  // =========== CLUSTER HALOS ===========
+  const clusterGroups = d3.group(nodes, d => d.category);
+  const halos = haloLayer.selectAll("circle")
+    .data(Array.from(clusterGroups.entries()))
+    .enter()
+    .append("circle")
+    .attr("fill", d => color(d[0]))
+    .attr("opacity", 0.08)
+    .attr("stroke", d => color(d[0]))
+    .attr("stroke-width", 2)
+    .attr("r", 120);
+
+  function pulse() {
+    halos.transition()
+      .duration(3000)
+      .attr("opacity", 0.04)
+      .transition()
+      .duration(3000)
+      .attr("opacity", 0.10)
+      .on("end", pulse);
+  }
+  pulse();
+
+  sim.on("tick",()=>{
+    // Update halo clusters
+    halos
+      .attr("cx", d => d3.mean(d[1], n => n.x))
+      .attr("cy", d => d3.mean(d[1], n => n.y))
+      .attr("r", d => {
+        const xs = d[1].map(n => n.x);
+        const ys = d[1].map(n => n.y);
+        const dx = d3.max(xs) - d3.min(xs);
+        const dy = d3.max(ys) - d3.min(ys);
+        return Math.sqrt(dx*dx + dy*dy)/2 + 80;
+      });
+
+    link.attr("x1",d=>d.source.x).attr("y1",d=>d.source.y)
+        .attr("x2",d=>d.target.x).attr("y2",d=>d.target.y);
+    node.attr("cx",d=>d.x).attr("cy",d=>d.y);
+    label.attr("x",d=>d.x).attr("y",d=>d.y);
+  });
+
+  // ===== Layer Filtering =====
+  function updateLayerVisibility(){
+    const show = {
+      disease: document.getElementById("chkDisease").checked,
+      drug: document.getElementById("chkDrug").checked,
+      nutrient: document.getElementById("chkNutrient").checked,
+      pathway: document.getElementById("chkPathway").checked,
+      semantic: document.getElementById("chkSemantic").checked
+    };
+    node.attr("display", d => show[d.category] ? null : "none");
+    label.attr("display", d => show[d.category] ? null : "none");
+    link.attr("display", l => (show[l.source.category] && show[l.target.category]) ? null : "none");
+    halos.attr("display", d => show[d[0]] ? null : "none");
+  }
+  ["chkDisease","chkDrug","chkNutrient","chkPathway","chkSemantic"]
+    .forEach(id => document.getElementById(id).addEventListener("change", updateLayerVisibility));
+
+  // ===== Incoming Query from Disease.html =====
+  const params = new URLSearchParams(window.location.search);
+  const q = params.get("q");
+  if (q) {
+    document.getElementById("searchBox").value = q;
+    setTimeout(() => applyFilter(), 1000);
+  }
+}
+
+// ===== Search Filter Logic =====
+function applyFilter(){
+  const query = document.getElementById("searchBox").value.toLowerCase().trim();
+  if(!query){ resetFilter(); return; }
+  node.transition().attr("opacity",d=>{
+    return d.id.toLowerCase().includes(query)?1:0.1;
+  });
+  link.transition().attr("opacity",l=>{
+    return (l.source.id.toLowerCase().includes(query) || l.target.id.toLowerCase().includes(query)) ? 0.9 : 0.05;
+  });
+  label.transition().attr("opacity",d=>{
+    return d.id.toLowerCase().includes(query)?1:0.1;
+  });
+  const matches = nodes.filter(d => d.id.toLowerCase().includes(query));
+  if(matches.length){
+    const x=d3.mean(matches,d=>d.x), y=d3.mean(matches,d=>d.y);
+    svg.transition().duration(750)
+      .call(d3.zoom().transform, d3.zoomIdentity.translate(width/2-x,height/2-y).scale(2));
+  }
+}
+
+function resetFilter(){
+  node.transition().attr("opacity",1);
+  link.transition().attr("opacity",1);
+  label.transition().attr("opacity",1);
+  svg.transition().duration(750)
+    .call(d3.zoom().transform,d3.zoomIdentity);
+}
+</script>
+</body>
+</html>
+

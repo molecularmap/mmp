@@ -1,0 +1,82 @@
+
+[
+  {
+    "id": "PubChem",
+    "title": "PubChem BioAssay",
+    "category": "Experimental",
+    "scope": "High-throughput biochemical and cell-based assays for millions of compounds.",
+    "description": "PubChem provides quantitative bioassay results that link molecular structure to biological activity, forming the foundation for AI-driven drug discovery and toxicity prediction.",
+    "size": "~1.4M bioassays, 100M+ data points",
+    "use": "Molecular activity prediction, drug screening, target discovery",
+    "links": [
+      { "label": "PubChem Portal", "url": "https://pubchem.ncbi.nlm.nih.gov/" },
+      { "label": "BioAssay Search", "url": "https://pubchem.ncbi.nlm.nih.gov/bioassay/" }
+    ]
+  },
+  {
+    "id": "ChEMBL",
+    "title": "ChEMBL Bioactivity Database",
+    "category": "Experimental",
+    "scope": "Curated bioactivity data from scientific literature and screening campaigns.",
+    "description": "ChEMBL aggregates bioactivity measurements from thousands of assays and drug discovery studies — connecting molecular targets, mechanisms, and pharmacological outcomes. Ideal for building predictive AI models in medicinal chemistry.",
+    "size": "~2.3M compounds, 16K targets, 1.2M assays",
+    "use": "Drug-target modeling, mechanism prediction, pharmacophore mapping",
+    "links": [
+      { "label": "ChEMBL Portal", "url": "https://www.ebi.ac.uk/chembl/" },
+      { "label": "ChEMBL API", "url": "https://www.ebi.ac.uk/chembl/ws" }
+    ]
+  },
+  {
+    "id": "MassIVE",
+    "title": "MassIVE Proteomics",
+    "category": "Proteomics",
+    "scope": "Public repository for mass spectrometry-based proteomics and metabolomics data.",
+    "description": "UCSD’s MassIVE hosts terabytes of proteomic and metabolomic spectra — a critical bridge between chemical structures and biological pathways, ideal for training multimodal AI models on molecular signatures.",
+    "size": "~30TB datasets across 20K+ submissions",
+    "use": "Spectral feature extraction, protein interaction mapping, omics AI modeling",
+    "links": [
+      { "label": "MassIVE Portal", "url": "https://massive.ucsd.edu/" },
+      { "label": "Dataset Browser", "url": "https://massive.ucsd.edu/ProteoSAFe/datasets.jsp" }
+    ]
+  },
+  {
+    "id": "HPA",
+    "title": "Human Protein Atlas",
+    "category": "Imaging & Biomarkers",
+    "scope": "Atlas of human protein expression in tissues and cells using antibody-based proteomics.",
+    "description": "The Human Protein Atlas combines imaging, transcriptomics, and antibody-based assays to map protein localization across tissues, cancers, and single cells — connecting molecular and phenotypic biomarkers.",
+    "size": "~27K protein-coding genes profiled",
+    "use": "Imaging biomarker discovery, cell-specific AI modeling, precision pathology",
+    "links": [
+      { "label": "Human Protein Atlas", "url": "https://www.proteinatlas.org/" },
+      { "label": "Data Download", "url": "https://www.proteinatlas.org/about/download" }
+    ]
+  },
+  {
+    "id": "ATILA",
+    "title": "ATILA Biosystems Diagnostics",
+    "category": "Clinical",
+    "scope": "Validated molecular diagnostic assays including qPCR and genotyping panels.",
+    "description": "ATILA Biosystems develops CE-marked and FDA-cleared diagnostic kits for infectious disease detection, cancer mutation screening, and genetic testing — connecting molecular signatures to real-world health outcomes.",
+    "size": "~50 commercial diagnostic panels",
+    "use": "Clinical biomarker validation, precision medicine, diagnostic AI training",
+    "links": [
+      { "label": "ATILA Biosystems", "url": "https://atilabiosystems.com/" },
+      { "label": "Products", "url": "https://atilabiosystems.com/products/" }
+    ]
+  },
+  {
+    "id": "CTGOV",
+    "title": "ClinicalTrials.gov",
+    "category": "Clinical Research",
+    "scope": "Registry and results database of publicly and privately supported clinical studies.",
+    "description": "ClinicalTrials.gov integrates structured metadata on clinical trial phases, disease focus, and biomarkers — connecting experimental and diagnostic data to patient outcomes for translational AI research.",
+    "size": "~480K+ registered studies",
+    "use": "Outcome prediction, biomarker validation, translational informatics",
+    "links": [
+      { "label": "ClinicalTrials.gov", "url": "https://clinicaltrials.gov/" },
+      { "label": "API Docs", "url": "https://clinicaltrials.gov/api/gui/ref/api_urls" }
+    ]
+  }
+]
+

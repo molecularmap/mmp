@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MolecularMap — Intelligent Molecular Graph</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+  body{font-family:'Segoe UI',system-ui,sans-serif;margin:0;background:#fafafa;color:#1e293b;overflow:hidden;}
+  header{background:linear-gradient(135deg,#2563eb,#15803d);color:white;text-align:center;padding:1.2rem;}
+  #controls{position:absolute;top:1rem;left:1rem;background:white;padding:0.6rem 1rem;border-radius:8px;
+            box-shadow:0 2px 8px rgba(0,0,0,0.15);z-index:5;display:flex;gap:0.5rem;align-items:center;}
+  #controls input{padding:0.4rem 0.6rem;border:1px solid #cbd5e1;border-radius:6px;width:240px;}
+  #controls button{padding:0.4rem 0.8rem;background:#2563eb;color:white;border:none;border-radius:6px;
+                   cursor:pointer;transition:background 0.2s;}
+  #controls button:hover{background:#1d4ed8;}
+  #graph{width:100vw;height:90vh;background:white;}
+  .tooltip{position:absolute;padding:6px 10px;background:#1e293b;color:white;border-radius:6px;
+           pointer-events:none;font-size:0.85rem;opacity:0;}
+  .legend{position:absolute;top:1rem;right:1rem;background:white;padding:0.5rem 0.8rem;
+           border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.15);}
+  .legend span{display:inline-block;width:12px;height:12px;margin-right:6px;border-radius:2px;}
+</style>
+</head>
+<body>
+<header>
+  <h1>🧬 Intelligent Molecular Map</h1>
+  <p>Search, zoom, and explore cross-domain molecular relationships in real time.</p>
+  <a href="index.html" style="color:#a7f3d0;text-decoration:none;">← Back to Home</a>
+</header>
+
+<div id="controls">
+  <input type="text" id="searchBox" placeholder="🔍 Search molecules, targets, pathways...">
+  <button onclick="applyFilter()">Filter</button>
+  <button onclick="resetFilter()">Reset</button>
+</div>
+
+<div id="graph"></div>
+<div class="tooltip" id="tooltip"></div>
+<div class="legend">
+  <div><span style="background:#eab308"></span> Nutrition</div>
+  <div><span style="background:#16a34a"></span> Preventive</div>
+  <div><span style="background:#0ea5e9"></span> Bioassay</div>
+  <div><span style="background:#dc2626"></span> Disease</div>
+  <div><span style="background:#8b5cf6"></span> Cross/Semantic</div>
+</div>
+
+<script>
+const width = window.innerWidth, height = window.innerHeight * 0.9;
+let svg, g, node, link, label, sim, nodes, links, color;
+
+Promise.all([
+  fetch("nutrition.json").then(r=>r.json()),
+  fetch("preventive.json").then(r=>r.json())
+]).then(([nutrition,preventive])=>{
+  ({nodes,links}=buildGraph(nutrition,preventive));
+  drawGraph(nodes,links);
+});
+
+function buildGraph(nutrition,preventive){
+  const added=new Map(), links=[];
+  function addNode(id,group,url,data){
+    if(!added.has(id)) added.set(id,{id,group,url,modules:new Set([group]),data});
+    else {
+      const ex=added.get(id);
+      ex.modules.add(group);
+      ex.data={...ex.data,...data};
+    }
+  }
+  function addLink(a,b,type){links.push({source:a,target:b,type});}
+
+  // Nutrition
+  nutrition.forEach(n=>{
+    addNode(n.name,"nutrition","nutrition.html?id="+n.id,n);
+    n.graph.nodes.forEach(x=>addNode(x.id,"nutrition","#",{}));
+    n.graph.links.forEach(l=>addLink(l.source,l.target,"nutrition"));
+  });
+  // Preventive
+  preventive.forEach(p=>{
+    addNode(p.name,"preventive","preventive.html?id="+p.id,p);
+    p.graph.nodes.forEach(x=>addNode(x.id,"preventive","#",{}));
+    p.graph.links.forEach(l=>addLink(l.source,l.target,"preventive"));
+  });
+
+  const allNodes=[...added.values()];
+
+  // Semantic cross-link detection
+  for(let i=0;i<allNodes.length;i++){
+    for(let j=i+1;j<allNodes.length;j++){
+      const a=allNodes[i], b=allNodes[j];
+      const shared = sharedFields(a.data,b.data);
+      if(shared.length>0) addLink(a.id,b.id,"semantic");
+    }
+  }
+  return {nodes:allNodes,links};
+}
+
+function sharedFields(a,b){
+  const fields=["target","pathways","health","effect"];
+  let result=[];
+  fields.forEach(f=>{
+    const ai=getArr(a[f]), bi=getArr(b[f]);
+    if(intersect(ai,bi).length>0) result.push(f);
+  });
+  return result;
+}
+function getArr(v){return !v?[]:(Array.isArray(v)?v:(typeof v==="string"?v.split(/[,;]+/):[]));}
+function intersect(a,b){return a.filter(x=>b.includes(x));}
+
+function drawGraph(n,l){
+  svg=d3.select("#graph").append("svg").attr("width",width).attr("height",height);
+  g=svg.append("g");
+  const tooltip=d3.select("#tooltip");
+
+  svg.call(d3.zoom().scaleExtent([0.3,6]).on("zoom",e=>g.attr("transform",e.transform)));
+  color=d3.scaleOrdinal().domain(["nutrition","preventive","bioassay","disease","semantic"])
+         .range(["#eab308","#16a34a","#0ea5e9","#dc2626","#8b5cf6"]);
+
+  sim=d3.forceSimulation(n)
+    .force("link",d3.forceLink(l).id(d=>d.id).distance(d=>d.type==="semantic"?60:90))
+    .force("charge",d3.forceManyBody().strength(-200))
+    .force("center",d3.forceCenter(width/2,height/2));
+
+  link=g.append("g").selectAll("line").data(l).enter().append("line")
+    .attr("stroke",d=>d.type==="semantic"?"#8b5cf6":"#cbd5e1")
+    .attr("stroke-width",d=>d.type==="semantic"?2:1)
+    .attr("stroke-dasharray",d=>d.type==="semantic"?"3,3":"0");
+
+  node=g.append("g").selectAll("circle").data(n).enter().append("circle")
+    .attr("r",6)
+    .attr("fill",d=>color([...d.modules][0]||"semantic"))
+    .attr("stroke",d=>d.modules.size>1?"#8b5cf6":"white")
+    .attr("stroke-width",d=>d.modules.size>1?2:1)
+    .on("mouseover",(e,d)=>{
+      tooltip.transition().style("opacity",1);
+      tooltip.html(`<strong>${d.id}</strong><br>${[...d.modules].join(", ")}`)
+             .style("left",(e.pageX+10)+"px").style("top",(e.pageY-20)+"px");
+    })
+    .on("mouseout",()=>tooltip.transition().style("opacity",0))
+    .on("click",(e,d)=>{ if(d.url!=="#") window.open(d.url,"_blank"); })
+    .call(drag(sim));
+
+  label=g.append("g").selectAll("text").data(n).enter().append("text")
+    .attr("font-size","10px").attr("dy",-10).attr("text-anchor","middle").text(d=>d.id);
+
+  sim.on("tick",()=>{
+    link.attr("x1",d=>d.source.x).attr("y1",d=>d.source.y)
+        .attr("x2",d=>d.target.x).attr("y2",d=>d.target.y);
+    node.attr("cx",d=>d.x).attr("cy",d=>d.y);
+    label.attr("x",d=>d.x).attr("y",d=>d.y);
+  });
+
+  function drag(sim){
+    return d3.drag()
+      .on("start",(e,d)=>{if(!e.active)sim.alphaTarget(0.3).restart();d.fx=d.x;d.fy=d.y;})
+      .on("drag",(e,d)=>{d.fx=e.x;d.fy=e.y;})
+      .on("end",(e,d)=>{if(!e.active)sim.alphaTarget(0);d.fx=null;d.fy=null;});
+  }
+}
+
+// =================== FILTERING ===================
+function applyFilter(){
+  const query=document.getElementById("searchBox").value.toLowerCase().trim();
+  if(!query){resetFilter();return;}
+  node.transition().attr("opacity",d=>{
+    const text=JSON.stringify(d.data).toLowerCase();
+    return text.includes(query)?1:0.1;
+  });
+  link.transition().attr("opacity",l=>{
+    const src=JSON.stringify(l.source.data).toLowerCase();
+    const tgt=JSON.stringify(l.target.data).toLowerCase();
+    return (src.includes(query)||tgt.includes(query))?0.9:0.05;
+  });
+  label.transition().attr("opacity",d=>{
+    const text=JSON.stringify(d.data).toLowerCase();
+    return text.includes(query)?1:0.1;
+  });
+
+  // Focus zoom on matches
+  const matches=nodes.filter(d=>JSON.stringify(d.data).toLowerCase().includes(query));
+  if(matches.length){
+    const x=d3.mean(matches,d=>d.x), y=d3.mean(matches,d=>d.y);
+    svg.transition().duration(750).call(d3.zoom().transform,d3.zoomIdentity.translate(width/2-x,height/2-y).scale(2));
+  }
+}
+
+function resetFilter(){
+  node.transition().attr("opacity",1);
+  link.transition().attr("opacity",1);
+  label.transition().attr("opacity",1);
+  svg.transition().duration(750).call(d3.zoom().transform,d3.zoomIdentity);
+}
+</script>
+</body>
+</html>
+

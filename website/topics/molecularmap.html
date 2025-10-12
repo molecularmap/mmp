@@ -1,0 +1,112 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MolecularMap — Unified Molecular Graph</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    body {font-family:'Segoe UI',system-ui,sans-serif;background:#fafafa;margin:0;color:#1e293b;}
+    header {background:linear-gradient(135deg,#2563eb,#15803d);color:white;text-align:center;padding:2rem;}
+    #graph {width:100%;height:90vh;background:white;border-top:3px solid #0f172a;}
+    .tooltip {
+      position:absolute;padding:6px 10px;background:#1e293b;color:white;border-radius:6px;
+      pointer-events:none;font-size:0.85rem;opacity:0;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>🧬 Unified Molecular Map</h1>
+  <p>Explore how nutrients, drugs, bioassays, and diseases interconnect across the molecular landscape.</p>
+  <a href="index.html" style="color:#a7f3d0;text-decoration:none;">← Back to Home</a>
+</header>
+
+<div id="graph"></div>
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+const width = window.innerWidth, height = window.innerHeight * 0.9;
+
+// Load and merge all module JSONs dynamically
+Promise.all([
+  fetch("nutrition.json").then(r=>r.json()),
+  fetch("preventive.json").then(r=>r.json())
+  // later you can add: fetch("bioassay.json"), fetch("disease.json")
+]).then(([nutrition, preventive])=>{
+  const nodes=[], links=[], added=new Set();
+
+  function addNode(id, group, label, url){
+    if(!added.has(id)){
+      nodes.push({id, group, label, url});
+      added.add(id);
+    }
+  }
+
+  // Nutrition
+  nutrition.forEach(n=>{
+    addNode(n.name,"nutrition","🍎 "+n.name,"nutrition.html?id="+n.id);
+    n.graph.nodes.forEach(x=>addNode(x.id,"nutrition",x.id,"#"));
+    n.graph.links.forEach(l=>links.push({source:l.source,target:l.target,type:"nutrition"}));
+  });
+
+  // Preventive
+  preventive.forEach(p=>{
+    addNode(p.name,"preventive","🌿 "+p.name,"preventive.html?id="+p.id);
+    p.graph.nodes.forEach(x=>addNode(x.id,"preventive",x.id,"#"));
+    p.graph.links.forEach(l=>links.push({source:l.source,target:l.target,type:"preventive"}));
+  });
+
+  drawUnifiedGraph(nodes,links);
+});
+
+function drawUnifiedGraph(nodes,links){
+  const svg=d3.select("#graph").append("svg").attr("width","100%").attr("height","100%");
+  const tooltip=d3.select("#tooltip");
+
+  const color = d3.scaleOrdinal()
+    .domain(["nutrition","preventive","bioassay","disease"])
+    .range(["#eab308","#16a34a","#0ea5e9","#dc2626"]);
+
+  const sim=d3.forceSimulation(nodes)
+    .force("link",d3.forceLink(links).id(d=>d.id).distance(80))
+    .force("charge",d3.forceManyBody().strength(-200))
+    .force("center",d3.forceCenter(width/2,height/2));
+
+  const link=svg.append("g").selectAll("line").data(links).enter().append("line")
+    .attr("stroke","#cbd5e1").attr("stroke-width",1);
+
+  const node=svg.append("g").selectAll("circle").data(nodes).enter().append("circle")
+    .attr("r",6)
+    .attr("fill",d=>color(d.group))
+    .on("mouseover",(e,d)=>{
+      tooltip.transition().style("opacity",1);
+      tooltip.html(d.label)
+        .style("left",(e.pageX+8)+"px")
+        .style("top",(e.pageY-20)+"px");
+    })
+    .on("mouseout",()=>tooltip.transition().style("opacity",0))
+    .on("click",(e,d)=>{ if(d.url!=="#") window.open(d.url,"_blank"); })
+    .call(drag(sim));
+
+  const label=svg.append("g").selectAll("text").data(nodes).enter().append("text")
+    .attr("font-size","10px").attr("dy",-10).attr("text-anchor","middle").text(d=>d.id);
+
+  sim.on("tick",()=>{
+    link.attr("x1",d=>d.source.x).attr("y1",d=>d.source.y)
+        .attr("x2",d=>d.target.x).attr("y2",d=>d.target.y);
+    node.attr("cx",d=>d.x).attr("cy",d=>d.y);
+    label.attr("x",d=>d.x).attr("y",d=>d.y);
+  });
+
+  function drag(sim){
+    return d3.drag()
+      .on("start",(e,d)=>{if(!e.active)sim.alphaTarget(0.3).restart();d.fx=d.x;d.fy=d.y;})
+      .on("drag",(e,d)=>{d.fx=e.x;d.fy=e.y;})
+      .on("end",(e,d)=>{if(!e.active)sim.alphaTarget(0);d.fx=null;d.fy=null;});
+  }
+}
+</script>
+</body>
+</html>
+

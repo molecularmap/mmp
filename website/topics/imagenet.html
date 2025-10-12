@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MolecularMap — The ImageNet of Molecules</title>
+  <meta name="description" content="Interactive molecular maps connecting chemistry, biology, materials, and AI.">
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      margin: 0;
+      background: #fafafa;
+      color: #1e293b;
+    }
+    header {
+      background: linear-gradient(135deg, #0f766e, #083344);
+      color: white;
+      padding: 2rem;
+      text-align: center;
+    }
+    .map-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .map-card {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      text-align: center;
+      padding: 0.5rem;
+    }
+    .map-card h4 {
+      margin: 0.5rem 0 0.2rem;
+      color: #0f766e;
+    }
+    svg {
+      border-radius: 6px;
+      background: #f8fafc;
+    }
+    footer {
+      text-align: center;
+      padding: 2rem;
+      border-top: 1px solid #e2e8f0;
+      color: #64748b;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🌐 The ImageNet of Molecules</h1>
+  <p>Explore molecular connections across biology, materials, and energy.</p>
+  <a href="/index.html" style="color:#a0f0d0;text-decoration:none;">← Back to Home</a>
+</header>
+
+<div class="map-grid">
+  <div class="map-card" id="battery-map">
+    <h4>Battery Materials</h4>
+  </div>
+  <div class="map-card" id="drug-action-map">
+    <h4>Drug Mechanisms</h4>
+  </div>
+  <div class="map-card" id="krebs-cycle-map">
+    <h4>Krebs Cycle</h4>
+  </div>
+  <div class="map-card" id="protein-pathway-map">
+    <h4>Protein Pathway</h4>
+  </div>
+</div>
+
+<footer>
+  <p>MolecularMap — Interactive Molecular AI Explorer © 2014–2025</p>
+</footer>
+
+<script>
+function createMap(selector, data) {
+  const width = 280, height = 220;
+  const svg = d3.select(selector)
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+  const simulation = d3.forceSimulation(data.nodes)
+    .force("link", d3.forceLink(data.links).distance(50).strength(0.6))
+    .force("charge", d3.forceManyBody().strength(-120))
+    .force("center", d3.forceCenter(width / 2, height / 2));
+
+  const link = svg.append("g")
+    .attr("stroke", "#ccc")
+    .selectAll("line")
+    .data(data.links)
+    .enter().append("line")
+    .attr("stroke-width", 1.5);
+
+  const node = svg.append("g")
+    .selectAll("circle")
+    .data(data.nodes)
+    .enter().append("circle")
+    .attr("r", 6)
+    .attr("fill", "#0f766e")
+    .call(d3.drag()
+      .on("start", dragStart)
+      .on("drag", dragging)
+      .on("end", dragEnd));
+
+  const label = svg.append("g")
+    .selectAll("text")
+    .data(data.nodes)
+    .enter().append("text")
+    .text(d => d.id)
+    .attr("x", 10)
+    .attr("y", 3)
+    .attr("font-size", "10px");
+
+  simulation.on("tick", () => {
+    link
+      .attr("x1", d => d.source.x)
+      .attr("y1", d => d.source.y)
+      .attr("x2", d => d.target.x)
+      .attr("y2", d => d.target.y);
+    node.attr("cx", d => d.x).attr("cy", d => d.y);
+    label.attr("x", d => d.x + 8).attr("y", d => d.y + 3);
+  });
+
+  function dragStart(e, d) { if (!e.active) simulation.alphaTarget(0.3).restart(); d.fx = d.x; d.fy = d.y; }
+  function dragging(e, d) { d.fx = e.x; d.fy = e.y; }
+  function dragEnd(e, d) { if (!e.active) simulation.alphaTarget(0); d.fx = null; d.fy = null; }
+}
+
+// Sample placeholder data
+const batteryData = { nodes: [{id:'Li'}, {id:'Co'}, {id:'Ni'}, {id:'O2'}],
+                      links: [{source:'Li',target:'Co'},{source:'Co',target:'Ni'},{source:'Ni',target:'O2'}]};
+const drugData = { nodes: [{id:'Drug'},{id:'Target'},{id:'Pathway'},{id:'Disease'}],
+                   links: [{source:'Drug',target:'Target'},{source:'Target',target:'Pathway'},{source:'Pathway',target:'Disease'}]};
+const krebsData = { nodes: [{id:'Glucose'},{id:'Pyruvate'},{id:'Citrate'},{id:'ATP'}],
+                    links: [{source:'Glucose',target:'Pyruvate'},{source:'Pyruvate',target:'Citrate'},{source:'Citrate',target:'ATP'}]};
+const proteinData = { nodes: [{id:'Kinase'},{id:'Phosphatase'},{id:'Substrate'},{id:'Signal'}],
+                      links: [{source:'Kinase',target:'Substrate'},{source:'Phosphatase',target:'Substrate'},{source:'Signal',target:'Kinase'}]};
+
+createMap('#battery-map', batteryData);
+createMap('#drug-action-map', drugData);
+createMap('#krebs-cycle-map', krebsData);
+createMap('#protein-pathway-map', proteinData);
+</script>
+
+</body>
+</html>
+

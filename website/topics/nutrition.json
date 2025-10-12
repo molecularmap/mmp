@@ -1,0 +1,62 @@
+
+[
+  {
+    "id": "vitaminC",
+    "name": "Vitamin C",
+    "category": "Vitamin",
+    "effect": "Antioxidant and immune system support.",
+    "description": "A water-soluble vitamin essential for collagen synthesis, immune defense, and oxidative stress reduction.",
+    "role": "Cofactor in enzymatic reactions, antioxidant",
+    "pathways": ["Ascorbate Metabolism", "Oxidative Stress Response"],
+    "profile": [20, 25, 45, 10],
+    "graph": {
+      "nodes": [
+        {"id": "Vitamin C", "group": 1},
+        {"id": "Collagen", "group": 2},
+        {"id": "ROS", "group": 2},
+        {"id": "Skin Health", "group": 3},
+        {"id": "Immunity", "group": 3}
+      ],
+      "links": [
+        {"source": "Vitamin C", "target": "Collagen"},
+        {"source": "Vitamin C", "target": "ROS"},
+        {"source": "Collagen", "target": "Skin Health"},
+        {"source": "ROS", "target": "Immunity"}
+      ]
+    },
+    "links": [
+      {"label": "PubChem", "url": "https://pubchem.ncbi.nlm.nih.gov/compound/54670067"},
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Vitamin_C"}
+    ]
+  },
+  {
+    "id": "omega3",
+    "name": "Omega-3 Fatty Acids",
+    "category": "Lipid",
+    "effect": "Supports brain, cardiovascular, and inflammatory balance.",
+    "description": "Polyunsaturated fatty acids (EPA, DHA) vital for neuronal and cardiovascular health.",
+    "role": "Structural component of cell membranes, anti-inflammatory mediator",
+    "pathways": ["Lipid Metabolism", "Inflammatory Resolution"],
+    "profile": [25, 30, 25, 20],
+    "graph": {
+      "nodes": [
+        {"id": "Omega-3", "group": 1},
+        {"id": "EPA", "group": 2},
+        {"id": "DHA", "group": 2},
+        {"id": "Brain Health", "group": 3},
+        {"id": "Heart Health", "group": 3}
+      ],
+      "links": [
+        {"source": "Omega-3", "target": "EPA"},
+        {"source": "Omega-3", "target": "DHA"},
+        {"source": "EPA", "target": "Heart Health"},
+        {"source": "DHA", "target": "Brain Health"}
+      ]
+    },
+    "links": [
+      {"label": "PubChem", "url": "https://pubchem.ncbi.nlm.nih.gov/compound/445580"},
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Omega-3_fatty_acid"}
+    ]
+  }
+]
+

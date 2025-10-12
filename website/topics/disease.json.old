@@ -1,0 +1,57 @@
+[
+  {
+    "id": "alzheimers",
+    "name": "Alzheimer's Disease",
+    "target": "APP, Tau",
+    "drug": "Donepezil",
+    "description": "Neurodegenerative disorder characterized by amyloid-β plaques and tau tangles, leading to progressive cognitive decline.",
+    "profile": [80,60,50,40,30],
+    "graph": {
+      "nodes": [
+        {"id": "Alzheimer's", "group": 1},
+        {"id": "APP", "group": 2},
+        {"id": "Tau", "group": 2},
+        {"id": "Amyloid-β", "group": 3},
+        {"id": "Cognition", "group": 4}
+      ],
+      "links": [
+        {"source": "Alzheimer's", "target": "APP"},
+        {"source": "Alzheimer's", "target": "Tau"},
+        {"source": "APP", "target": "Amyloid-β"},
+        {"source": "Tau", "target": "Cognition"}
+      ]
+    },
+    "links": [
+      {"label": "PubMed", "url": "https://pubmed.ncbi.nlm.nih.gov/?term=Alzheimer%27s+disease"},
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Alzheimer%27s_disease"}
+    ]
+  },
+  {
+    "id": "diabetes",
+    "name": "Type 2 Diabetes",
+    "target": "GLUT4, AMPK",
+    "drug": "Metformin",
+    "description": "Metabolic disorder resulting in insulin resistance and high blood glucose. Linked to obesity and metabolic syndrome.",
+    "profile": [70,80,60,50,40],
+    "graph": {
+      "nodes": [
+        {"id": "Diabetes", "group": 1},
+        {"id": "AMPK", "group": 2},
+        {"id": "GLUT4", "group": 2},
+        {"id": "Metformin", "group": 3},
+        {"id": "Insulin", "group": 4}
+      ],
+      "links": [
+        {"source": "Diabetes", "target": "AMPK"},
+        {"source": "Diabetes", "target": "GLUT4"},
+        {"source": "AMPK", "target": "Metformin"},
+        {"source": "GLUT4", "target": "Insulin"}
+      ]
+    },
+    "links": [
+      {"label": "PubMed", "url": "https://pubmed.ncbi.nlm.nih.gov/?term=Type+2+Diabetes"},
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Diabetes_mellitus_type_2"}
+    ]
+  }
+]
+

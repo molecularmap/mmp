@@ -1,0 +1,271 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MolecularMap — Curated AI Datasets</title>
+  <meta name="description" content="Curated molecular datasets ready for AI and ML training.">
+  <style>
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #fafafa;
+      margin: 0;
+      color: #1e293b;
+    }
+    header {
+      background: linear-gradient(135deg, #0f766e, #083344);
+      color: white;
+      padding: 2.5rem;
+      text-align: center;
+    }
+    main {
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    input[type="text"] {
+      width: 100%;
+      max-width: 400px;
+      padding: 0.5rem 0.8rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    th, td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid #e2e8f0;
+      text-align: left;
+      vertical-align: middle;
+    }
+    th {
+      background: #0f766e;
+      color: white;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    tr:hover { background: #f1f5f9; }
+    a {
+      color: #0f766e;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    a:hover { text-decoration: underline; }
+    .btn {
+      display: inline-block;
+      background: #0f766e;
+      color: white;
+      padding: 0.3rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      text-decoration: none;
+      margin-right: 0.3rem;
+      transition: background 0.2s;
+    }
+    .btn:hover { background: #115e59; }
+
+    footer {
+      text-align: center;
+      color: #64748b;
+      padding: 2rem;
+    }
+
+    /* Modal styling */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.5);
+    }
+    .modal-content {
+      background-color: white;
+      margin: 8% auto;
+      padding: 2rem;
+      border-radius: 10px;
+      max-width: 600px;
+      position: relative;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .close {
+      position: absolute;
+      top: 10px;
+      right: 14px;
+      color: #555;
+      font-size: 22px;
+      cursor: pointer;
+    }
+    .close:hover { color: #000; }
+    .modal h3 { color: #0f766e; margin-top: 0; }
+    .modal p { margin-bottom: 1rem; line-height: 1.5; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🧬 Curated AI-Ready Datasets</h1>
+  <p>Explore molecular datasets standardized for multimodal AI and ML research.</p>
+  <a href="/index.html" style="color:#a0f0d0;text-decoration:none;">← Back to Home</a>
+</header>
+
+<main>
+  <section>
+    <input type="text" id="searchBox" placeholder="🔍 Search datasets... (e.g. protein, pathway, drug)" onkeyup="filterTable()">
+
+    <table id="datasetTable">
+      <thead>
+        <tr>
+          <th>Dataset</th>
+          <th>Source</th>
+          <th>Type</th>
+          <th>Format</th>
+          <th>Links</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><a onclick="openModal('ChEMBL')"><strong>ChEMBL Bioactivity</strong></a></td>
+          <td>EBI</td><td>Small Molecules / Bioassays</td><td>JSON, CSV</td>
+          <td><a class="btn" href="https://ftp.ebi.ac.uk/pub/databases/chembl/ChEMBLdb/latest/" target="_blank">Download</a>
+              <a class="btn" href="https://www.ebi.ac.uk/chembl/ws" target="_blank">API</a></td>
+        </tr>
+        <tr>
+          <td><a onclick="openModal('MetaCyc')"><strong>MetaCyc Pathways</strong></a></td>
+          <td>SRI International</td><td>Curated Metabolic & Enzymatic Pathways</td><td>BioPAX, RDF</td>
+          <td><a class="btn" href="https://metacyc.org/download.shtml" target="_blank">Download</a></td>
+        </tr>
+        <tr>
+          <td><a onclick="openModal('Reactome')"><strong>Reactome</strong></a></td>
+          <td>EMBL-EBI</td><td>Signal Transduction & Pathway Networks</td><td>BioPAX, RDF</td>
+          <td><a class="btn" href="https://reactome.org/download-data" target="_blank">Download</a>
+              <a class="btn" href="https://reactome.org/ContentService/" target="_blank">API</a></td>
+        </tr>
+        <tr>
+          <td><a onclick="openModal('MassBank')"><strong>MassBank</strong></a></td>
+          <td>NBDC Japan</td><td>Mass Spectrometry Spectra</td><td>mzML, JSON</td>
+          <td><a class="btn" href="https://massbank.eu/MassBank/Download/" target="_blank">Download</a>
+              <a class="btn" href="https://massbank.eu/MassBank/API/" target="_blank">API</a></td>
+        </tr>
+        <tr>
+          <td><a onclick="openModal('PharmGKB')"><strong>PharmGKB</strong></a></td>
+          <td>Stanford / NIH</td><td>Pharmacogenomics / Drug–Gene Relationships</td><td>TSV, JSON</td>
+          <td><a class="btn" href="https://www.pharmgkb.org/downloads" target="_blank">Download</a>
+              <a class="btn" href="https://api.pharmgkb.org/v1/" target="_blank">API</a></td>
+        </tr>
+        <tr>
+          <td><a onclick="openModal('Semantic')"><strong>Semantic Ontologies</strong></a></td>
+          <td>OBO Foundry</td><td>MeSH, GO, ChEBI, SNOMED</td><td>OWL, RDF</td>
+          <td><a class="btn" href="http://obofoundry.org/" target="_blank">Browse</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+</main>
+
+<footer>
+  MolecularMap — Unified Molecular Intelligence © 2014–2025
+</footer>
+
+<!-- Dataset Detail Modals -->
+<div id="modal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <h3 id="modalTitle">Dataset Details</h3>
+    <p id="modalDescription"></p>
+    <p><strong>Data Size:</strong> <span id="modalSize"></span></p>
+    <p><strong>Applications:</strong> <span id="modalUse"></span></p>
+  </div>
+</div>
+
+<script>
+function filterTable() {
+  const input = document.getElementById('searchBox');
+  const filter = input.value.toLowerCase();
+  const rows = document.querySelectorAll('#datasetTable tbody tr');
+  rows.forEach(row => {
+    const text = row.innerText.toLowerCase();
+    row.style.display = text.includes(filter) ? '' : 'none';
+  });
+}
+
+const datasetInfo = {
+  ChEMBL: {
+    title: "ChEMBL Bioactivity",
+    desc: "A large-scale database of bioactive molecules with drug-like properties. Includes compound structures, targets, and activity data extracted from scientific literature and patents.",
+    size: "~2M compounds, ~15M activity records",
+    use: "QSAR modeling, virtual screening, AI-based drug design."
+  },
+  MetaCyc: {
+    title: "MetaCyc Pathways",
+    desc: "Curated database of experimentally elucidated metabolic pathways and enzymes, spanning thousands of organisms. All entries are literature-supported and cross-linked to gene and protein databases.",
+    size: "~3,000 pathways, 15,000 enzymes",
+    use: "Metabolic modeling, biochemical pathway AI reasoning."
+  },
+  Reactome: {
+    title: "Reactome",
+    desc: "Expert-curated knowledgebase of human and model organism biological pathways, including signaling, immune, and disease pathways.",
+    size: "~2,500 human pathways",
+    use: "Systems biology, pathway AI prediction, network enrichment."
+  },
+  MassBank: {
+    title: "MassBank",
+    desc: "A comprehensive repository of reference mass spectra for small molecules. Used for spectral matching and compound identification in metabolomics and sonification models.",
+    size: "~1M spectra, 30K compounds",
+    use: "Spectral AI models, sonification training, metabolite identification."
+  },
+  PharmGKB: {
+    title: "PharmGKB",
+    desc: "A pharmacogenomics knowledgebase linking genetic variants to drug response phenotypes, curated from literature and clinical guidelines.",
+    size: "~25K genes, 4K drugs",
+    use: "Drug–gene interaction modeling, personalized medicine AI."
+  },
+  Semantic: {
+    title: "Semantic Ontologies (OBO Foundry)",
+    desc: "A collection of biomedical ontologies such as Gene Ontology, MeSH, SNOMED CT, and ChEBI. Provides semantic structure and controlled vocabulary for AI reasoning.",
+    size: "~100 ontologies, millions of concepts",
+    use: "Knowledge graph embedding, ontology-based AI interpretation."
+  }
+};
+
+function openModal(id) {
+  const info = datasetInfo[id];
+  if (info) {
+    document.getElementById('modalTitle').textContent = info.title;
+    document.getElementById('modalDescription').textContent = info.desc;
+    document.getElementById('modalSize').textContent = info.size;
+    document.getElementById('modalUse').textContent = info.use;
+    document.getElementById('modal').style.display = "block";
+  }
+}
+
+function closeModal() {
+  document.getElementById('modal').style.display = "none";
+}
+
+window.onclick = function(event) {
+  const modal = document.getElementById('modal');
+  if (event.target == modal) modal.style.display = "none";
+}
+</script>
+
+</body>
+</html>
+

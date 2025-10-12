@@ -1,0 +1,250 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MolecularMap — Multimodal Molecular Relationships</title>
+  <meta name="description" content="Unified molecular graphs connecting chemical, biological, and semantic relationships.">
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      margin: 0;
+      background: #fafafa;
+      color: #1e293b;
+    }
+    header {
+      background: linear-gradient(135deg, #0f766e, #083344);
+      color: white;
+      padding: 2.5rem;
+      text-align: center;
+    }
+    main {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    h2 { color: #0f766e; }
+    .chart {
+      border: 1px solid #e2e8f0;
+      background: white;
+      border-radius: 8px;
+      padding: 1rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      position: relative;
+    }
+    .legend {
+      text-align: center;
+      margin: 1rem 0;
+    }
+    .legend span {
+      display: inline-block;
+      margin: 0 1rem;
+      font-size: 0.9rem;
+    }
+    .legend .solid::before { content: ''; display:inline-block; width:20px; height:2px; background:#0f766e; margin-right:5px; }
+    .legend .dashed::before { content: ''; display:inline-block; width:20px; height:2px; border-top:2px dashed #f97316; margin-right:5px; }
+    .legend .dotted::before { content: ''; display:inline-block; width:20px; height:2px; border-top:2px dotted #6366f1; margin-right:5px; }
+    footer {
+      text-align: center;
+      padding: 2rem;
+      border-top: 1px solid #e2e8f0;
+      color: #64748b;
+    }
+    .tooltip {
+      position: absolute;
+      background: rgba(0,0,0,0.75);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      pointer-events: none;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🔗 Multimodal Molecular Relationships</h1>
+  <p>Visualizing how molecules, pathways, and knowledge connect across chemistry, biology, and medicine.</p>
+  <a href="/index.html" style="color:#a0f0d0;text-decoration:none;">← Back to Home</a>
+</header>
+
+<main>
+  <section>
+    <h2>Unified Molecular Graph</h2>
+    <p>
+      MolecularMap integrates data from diverse sources into a single, multimodal graph.  
+      Solid links represent chemical reactions, dashed links represent biological pathways,  
+      and dotted links encode semantic relationships across knowledge domains.
+    </p>
+    <div class="legend">
+      <span class="solid">Chemical Reactions</span>
+      <span class="dashed">Biological Pathways</span>
+      <span class="dotted">Semantic Ontologies</span>
+    </div>
+    <div id="graph" class="chart" style="height: 560px;"></div>
+  </section>
+</main>
+
+<footer>
+  <p>MolecularMap — Unified Molecular Intelligence © 2014–2025</p>
+</footer>
+
+<script>
+// --- Config ---
+const useExternal = false;
+
+// --- Graph Data ---
+const nodes = [
+  { id: 'Glucose', group: 'chemical', description: 'Primary metabolic sugar molecule.' },
+  { id: 'ATP', group: 'chemical', description: 'Energy molecule generated in metabolism.' },
+  { id: 'Pyruvate', group: 'chemical', description: 'Intermediate product of glycolysis.' },
+  { id: 'Glycolysis', group: 'biological', description: 'Pathway converting glucose to pyruvate.' },
+  { id: 'Mitochondria', group: 'biological', description: 'Organelle where ATP is produced.' },
+  { id: 'Energy Metabolism', group: 'semantic', description: 'Concept unifying energy-related pathways.' },
+  { id: 'Diabetes', group: 'semantic', description: 'Disease related to glucose metabolism.' }
+];
+
+const links = [
+  { source: 'Glucose', target: 'Pyruvate', type: 'solid' },
+  { source: 'ATP', target: 'Glycolysis', type: 'dashed' },
+  { source: 'Pyruvate', target: 'Mitochondria', type: 'dashed' },
+  { source: 'Mitochondria', target: 'Energy Metabolism', type: 'dotted' },
+  { source: 'Energy Metabolism', target: 'Diabetes', type: 'dotted' },
+  { source: 'Glucose', target: 'Energy Metabolism', type: 'solid' }
+];
+
+const width = 960, height = 540;
+const svg = d3.select("#graph").append("svg")
+  .attr("width", width)
+  .attr("height", height);
+
+// --- Background Zones ---
+const clusterWidth = width / 3;
+
+svg.append("rect").attr("x", 0).attr("y", 0).attr("width", clusterWidth)
+  .attr("height", height).attr("fill", "#0f766e20");
+svg.append("rect").attr("x", clusterWidth).attr("y", 0).attr("width", clusterWidth)
+  .attr("height", height).attr("fill", "#f9731620");
+svg.append("rect").attr("x", clusterWidth * 2).attr("y", 0).attr("width", clusterWidth)
+  .attr("height", height).attr("fill", "#6366f120");
+
+// --- Domain Labels ---
+const domainLabels = {
+  chemical: svg.append("text").attr("x", clusterWidth / 2).attr("y", 40)
+    .attr("text-anchor", "middle").attr("fill", "#0f766e").attr("font-size", "18px")
+    .attr("opacity", 0.7).text("CHEMICAL SPACE"),
+  biological: svg.append("text").attr("x", clusterWidth * 1.5).attr("y", 40)
+    .attr("text-anchor", "middle").attr("fill", "#f97316").attr("font-size", "18px")
+    .attr("opacity", 0.7).text("BIOLOGICAL SPACE"),
+  semantic: svg.append("text").attr("x", clusterWidth * 2.5).attr("y", 40)
+    .attr("text-anchor", "middle").attr("fill", "#6366f1").attr("font-size", "18px")
+    .attr("opacity", 0.7).text("SEMANTIC SPACE")
+};
+
+const tooltip = d3.select("#graph").append("div").attr("class", "tooltip").style("opacity", 0);
+
+const clusterCenters = {
+  chemical: { x: width / 6, y: height / 2 },
+  biological: { x: width / 2, y: height / 2 },
+  semantic: { x: (5 * width) / 6, y: height / 2 }
+};
+
+// --- Simulation ---
+const simulation = d3.forceSimulation(nodes)
+  .force("link", d3.forceLink(links).id(d => d.id).distance(120).strength(0.8))
+  .force("charge", d3.forceManyBody().strength(-180))
+  .force("x", d3.forceX().x(d => clusterCenters[d.group].x).strength(0.15))
+  .force("y", d3.forceY().y(d => clusterCenters[d.group].y).strength(0.15))
+  .force("collision", d3.forceCollide().radius(30));
+
+// --- Draw Links ---
+const link = svg.append("g").selectAll("line").data(links).enter().append("line")
+  .attr("stroke-width", 2)
+  .attr("stroke", d => d.type === 'solid' ? '#0f766e' :
+                      d.type === 'dashed' ? '#f97316' : '#6366f1')
+  .style("stroke-dasharray", d => d.type === 'solid' ? "0" :
+                                  d.type === 'dashed' ? "6,4" : "2,3")
+  .attr("opacity", 0.9);
+
+// --- Draw Nodes ---
+const node = svg.append("g").selectAll("circle").data(nodes).enter().append("circle")
+  .attr("r", 10)
+  .attr("fill", d => d.group === 'chemical' ? '#0f766e' :
+                     d.group === 'biological' ? '#f97316' : '#6366f1')
+  .attr("cursor", "pointer")
+  .on("mouseover", (e, d) => {
+    tooltip.transition().duration(150).style("opacity", 1);
+    tooltip.html(`<strong>${d.id}</strong><br>${d.description}`)
+      .style("left", (e.pageX + 8) + "px")
+      .style("top", (e.pageY - 28) + "px");
+
+    // Fade other domain labels
+    Object.entries(domainLabels).forEach(([key, lbl]) =>
+      lbl.transition().duration(200).attr("opacity", key === d.group ? 1.0 : 0.3)
+    );
+
+    // Highlight connected nodes and links
+    node.transition().duration(200)
+      .attr("opacity", n => isConnected(d, n) ? 1.0 : 0.15);
+    link.transition().duration(200)
+      .attr("opacity", l => l.source.id === d.id || l.target.id === d.id ? 1.0 : 0.1);
+  })
+  .on("mouseout", () => {
+    tooltip.transition().duration(200).style("opacity", 0);
+    Object.values(domainLabels).forEach(lbl =>
+      lbl.transition().duration(300).attr("opacity", 0.7)
+    );
+    node.transition().duration(300).attr("opacity", 1.0);
+    link.transition().duration(300).attr("opacity", 0.9);
+  })
+  .on("click", (e, d) => {
+    const q = encodeURIComponent(d.id);
+    const url = useExternal ? `https://moaudionet.com/entity/${q}` : `/search.php?q=${q}`;
+    window.open(url, "_blank");
+  })
+  .call(drag(simulation));
+
+// --- Labels ---
+const label = svg.append("g").selectAll("text").data(nodes).enter().append("text")
+  .text(d => d.id)
+  .attr("font-size", "13px")
+  .attr("fill", "#1e293b")
+  .attr("pointer-events", "none");
+
+// --- Build connection map ---
+const linkedByIndex = {};
+links.forEach(l => { linkedByIndex[`${l.source.id},${l.target.id}`] = 1; });
+function isConnected(a, b) {
+  return linkedByIndex[`${a.id},${b.id}`] ||
+         linkedByIndex[`${b.id},${a.id}`] ||
+         a.id === b.id;
+}
+
+// --- Simulation Tick ---
+simulation.on("tick", () => {
+  link.attr("x1", d => d.source.x).attr("y1", d => d.source.y)
+      .attr("x2", d => d.target.x).attr("y2", d => d.target.y);
+  node.attr("cx", d => d.x).attr("cy", d => d.y);
+  label.attr("x", d => d.x + 12).attr("y", d => d.y + 4);
+});
+
+// --- Dragging ---
+function drag(simulation) {
+  function dragstarted(e, d) {
+    if (!e.active) simulation.alphaTarget(0.3).restart();
+    d.fx = d.x; d.fy = d.y;
+  }
+  function dragged(e, d) { d.fx = e.x; d.fy = e.y; }
+  function dragended(e, d) {
+    if (!e.active) simulation.alphaTarget(0);
+    d.fx = null; d.fy = null;
+  }
+  return d3.drag().on("start", dragstarted).on("drag", dragged).on("end", dragended);
+}
+</script>
+
+</body>
+</html>
+

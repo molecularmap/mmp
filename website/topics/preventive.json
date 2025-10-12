@@ -1,0 +1,64 @@
+
+[
+  {
+    "id": "resveratrol",
+    "name": "Resveratrol",
+    "category": "Polyphenol",
+    "effect": "Activates SIRT1 and enhances mitochondrial function.",
+    "description": "A natural compound in grapes and berries known for its antioxidant and longevity-promoting effects via SIRT1 and AMPK activation.",
+    "target": "SIRT1, AMPK",
+    "pathways": ["Mitochondrial Biogenesis", "Oxidative Stress Response"],
+    "health": ["Anti-aging", "Metabolic Regulation"],
+    "profile": [35, 25, 20, 20],
+    "graph": {
+      "nodes": [
+        {"id": "Resveratrol", "group": 1},
+        {"id": "SIRT1", "group": 2},
+        {"id": "AMPK", "group": 2},
+        {"id": "Longevity", "group": 3},
+        {"id": "Metabolism", "group": 3}
+      ],
+      "links": [
+        {"source": "Resveratrol", "target": "SIRT1"},
+        {"source": "Resveratrol", "target": "AMPK"},
+        {"source": "SIRT1", "target": "Longevity"},
+        {"source": "AMPK", "target": "Metabolism"}
+      ]
+    },
+    "links": [
+      {"label": "PubChem", "url": "https://pubchem.ncbi.nlm.nih.gov/compound/445154"},
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Resveratrol"}
+    ]
+  },
+  {
+    "id": "curcumin",
+    "name": "Curcumin",
+    "category": "Polyphenol",
+    "effect": "Antioxidant and anti-inflammatory through NF-κB modulation.",
+    "description": "Active component of turmeric that regulates inflammation, oxidative stress, and metabolic homeostasis.",
+    "target": "NF-κB, Nrf2",
+    "pathways": ["Inflammation Control", "Antioxidant Response"],
+    "health": ["Anti-inflammatory", "Cognitive Health"],
+    "profile": [40, 20, 30, 10],
+    "graph": {
+      "nodes": [
+        {"id": "Curcumin", "group": 1},
+        {"id": "NF-κB", "group": 2},
+        {"id": "Nrf2", "group": 2},
+        {"id": "Inflammation", "group": 3},
+        {"id": "Antioxidant", "group": 3}
+      ],
+      "links": [
+        {"source": "Curcumin", "target": "NF-κB"},
+        {"source": "Curcumin", "target": "Nrf2"},
+        {"source": "NF-κB", "target": "Inflammation"},
+        {"source": "Nrf2", "target": "Antioxidant"}
+      ]
+    },
+    "links": [
+      {"label": "PubChem", "url": "https://pubchem.ncbi.nlm.nih.gov/compound/969516"},
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Curcumin"}
+    ]
+  }
+]
+

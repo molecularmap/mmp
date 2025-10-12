@@ -1,0 +1,244 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MolecularMap — Curated AI Datasets</title>
+  <meta name="description" content="Curated molecular datasets ready for AI and ML training.">
+  <style>
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #fafafa;
+      margin: 0;
+      color: #1e293b;
+    }
+    header {
+      background: linear-gradient(135deg, #0f766e, #083344);
+      color: white;
+      padding: 2.5rem;
+      text-align: center;
+    }
+    main {
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    input[type="text"] {
+      width: 100%;
+      max-width: 400px;
+      padding: 0.5rem 0.8rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    th, td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid #e2e8f0;
+      text-align: left;
+      vertical-align: middle;
+    }
+    th {
+      background: #0f766e;
+      color: white;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    tr:hover {
+      background: #f1f5f9;
+    }
+    footer {
+      text-align: center;
+      color: #64748b;
+      padding: 2rem;
+    }
+    a {
+      color: #0f766e;
+      text-decoration: none;
+    }
+    .btn {
+      display: inline-block;
+      background: #0f766e;
+      color: white;
+      padding: 0.3rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      text-decoration: none;
+      margin-right: 0.3rem;
+      transition: background 0.2s;
+    }
+    .btn:hover {
+      background: #115e59;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🧬 Curated AI-Ready Datasets</h1>
+  <p>Explore molecular datasets standardized for multimodal AI and ML research.</p>
+  <a href="/index.html" style="color:#a0f0d0;text-decoration:none;">← Back to Home</a>
+</header>
+
+<main>
+  <section>
+    <input type="text" id="searchBox" placeholder="🔍 Search datasets... (e.g. protein, pathway, drug)" onkeyup="filterTable()">
+
+    <table id="datasetTable">
+      <thead>
+        <tr>
+          <th>Dataset</th>
+          <th>Source</th>
+          <th>Type</th>
+          <th>Format</th>
+          <th>Links</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>ChEMBL Bioactivity</strong></td>
+          <td>EBI</td>
+          <td>Small Molecules / Bioassays</td>
+          <td>JSON, CSV</td>
+          <td>
+            <a class="btn" href="https://ftp.ebi.ac.uk/pub/databases/chembl/ChEMBLdb/latest/" target="_blank">Download</a>
+            <a class="btn" href="https://www.ebi.ac.uk/chembl/ws" target="_blank">API</a>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>PubChem Compounds</strong></td>
+          <td>NCBI</td>
+          <td>Chemical Structures</td>
+          <td>RDF, SDF</td>
+          <td>
+            <a class="btn" href="https://ftp.ncbi.nlm.nih.gov/pubchem/Compound/" target="_blank">Download</a>
+            <a class="btn" href="https://pubchem.ncbi.nlm.nih.gov/rest/pug/" target="_blank">API</a>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>UniProt Proteins</strong></td>
+          <td>EMBL-EBI</td>
+          <td>Protein Sequences</td>
+          <td>FASTA, RDF</td>
+          <td>
+            <a class="btn" href="https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/" target="_blank">Download</a>
+            <a class="btn" href="https://www.uniprot.org/help/api" target="_blank">API</a>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Tox21 Toxicity</strong></td>
+          <td>NIH / EPA</td>
+          <td>Toxicology / Drug Screening</td>
+          <td>CSV, JSON</td>
+          <td>
+            <a class="btn" href="https://tripod.nih.gov/tox21/" target="_blank">Download</a>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>KEGG Pathways</strong></td>
+          <td>Kyoto University</td>
+          <td>Metabolic Pathways</td>
+          <td>RDF, XML</td>
+          <td>
+            <a class="btn" href="https://www.kegg.jp/kegg/download/" target="_blank">Download</a>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>MetaCyc Pathways</strong></td>
+          <td>SRI International</td>
+          <td>Curated Metabolic & Enzymatic Pathways</td>
+          <td>BioPAX, RDF</td>
+          <td>
+            <a class="btn" href="https://metacyc.org/download.shtml" target="_blank">Download</a>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Reactome</strong></td>
+          <td>EMBL-EBI</td>
+          <td>Signal Transduction & Pathway Networks</td>
+          <td>BioPAX, RDF</td>
+          <td>
+            <a class="btn" href="https://reactome.org/download-data" target="_blank">Download</a>
+            <a class="btn" href="https://reactome.org/ContentService/" target="_blank">API</a>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>MassBank</strong></td>
+          <td>NBDC Japan</td>
+          <td>Mass Spectrometry Spectra</td>
+          <td>mzML, JSON</td>
+          <td>
+            <a class="btn" href="https://massbank.eu/MassBank/Download/" target="_blank">Download</a>
+            <a class="btn" href="https://massbank.eu/MassBank/API/" target="_blank">API</a>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Human Metabolome Database (HMDB)</strong></td>
+          <td>UAlberta</td>
+          <td>Metabolomics</td>
+          <td>XML, CSV</td>
+          <td>
+            <a class="btn" href="https://hmdb.ca/downloads" target="_blank">Download</a>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>PharmGKB</strong></td>
+          <td>Stanford / NIH</td>
+          <td>Pharmacogenomics / Drug–Gene Relationships</td>
+          <td>TSV, JSON</td>
+          <td>
+            <a class="btn" href="https://www.pharmgkb.org/downloads" target="_blank">Download</a>
+            <a class="btn" href="https://api.pharmgkb.org/v1/" target="_blank">API</a>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Semantic Ontologies</strong></td>
+          <td>NCBI / OBO Foundry</td>
+          <td>MeSH, GO, ChEBI, SNOMED</td>
+          <td>OWL, RDF</td>
+          <td>
+            <a class="btn" href="http://obofoundry.org/" target="_blank">Browse</a>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>MolecularMap Internal Set</strong></td>
+          <td>MolecularMap</td>
+          <td>Curated Multimodal Data</td>
+          <td>JSON, GraphDB</td>
+          <td>
+            <a class="btn" href="#" onclick="alert('Coming soon: MolecularMap unified dataset');return false;">Preview</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+</main>
+
+<footer>
+  MolecularMap — Unified Molecular Intelligence © 2014–2025
+</footer>
+
+<script>
+function filterTable() {
+  const input = document.getElementById('searchBox');
+  const filter = input.value.toLowerCase();
+  const rows = document.querySelectorAll('#datasetTable tbody tr');
+  rows.forEach(row => {
+    const text = row.innerText.toLowerCase();
+    row.style.display = text.includes(filter) ? '' : 'none';
+  });
+}
+</script>
+
+</body>
+</html>
+

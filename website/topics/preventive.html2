@@ -1,0 +1,152 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MolecularMap — Preventive Health Molecules Explorer</title>
+  <meta name="description" content="Explore molecules that promote resilience, longevity, and preventive health through nutrition and molecular modulation.">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    body {font-family:'Segoe UI',system-ui,sans-serif;background:#fafafa;margin:0;color:#1e293b;}
+    header {background:linear-gradient(135deg,#15803d,#064e3b);color:white;padding:2.5rem;text-align:center;}
+    main {max-width:1200px;margin:2rem auto;padding:0 1.5rem;}
+    input[type=text]{width:100%;max-width:400px;padding:0.5rem 0.8rem;font-size:1rem;border:1px solid #ccc;border-radius:6px;margin-bottom:1.5rem;}
+    table{width:100%;border-collapse:collapse;background:white;border-radius:8px;overflow:hidden;box-shadow:0 2px 4px rgba(0,0,0,0.05);}
+    th,td{padding:0.75rem 1rem;border-bottom:1px solid #e2e8f0;text-align:left;}
+    th{background:#15803d;color:white;text-transform:uppercase;letter-spacing:0.03em;}
+    tr:hover{background:#f1f5f9;}
+    a{color:#15803d;text-decoration:none;cursor:pointer;}
+    .btn{display:inline-block;background:#15803d;color:white;padding:0.3rem 0.8rem;border-radius:6px;font-size:0.85rem;text-decoration:none;margin-right:0.3rem;transition:background 0.2s;}
+    .btn:hover{background:#166534;}
+    footer{text-align:center;color:#64748b;padding:2rem;}
+    #explorer{background:white;margin-top:2rem;padding:1.5rem;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,0.08);display:none;}
+    #explorer h2{color:#15803d;margin-top:0;}
+    #chart-panel{display:flex;flex-wrap:wrap;gap:1rem;align-items:flex-start;}
+    canvas{flex:1 1 400px;max-width:500px;}
+    #graph{flex:1 1 400px;height:420px;border:1px solid #e5e7eb;border-radius:8px;}
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🌿 Preventive Health Molecules Explorer</h1>
+  <p>Discover nutrients, antioxidants, and metabolic regulators that promote resilience and longevity.</p>
+  <a href="index.html" style="color:#a7f3d0;text-decoration:none;">← Back to Home</a>
+</header>
+
+<main>
+  <input type="text" id="searchBox" placeholder="🔍 Search molecules..." onkeyup="filterTable()">
+
+  <table id="molTable">
+    <thead><tr><th>Molecule</th><th>Category</th><th>Primary Effect</th><th>Links</th></tr></thead>
+    <tbody></tbody>
+  </table>
+
+  <div id="explorer">
+    <h2 id="explorerTitle"></h2>
+    <p id="explorerDesc"></p>
+    <div id="chart-panel">
+      <canvas id="explorerChart"></canvas>
+      <div id="graph"></div>
+    </div>
+    <div id="explorerExtra"></div>
+  </div>
+</main>
+
+<footer>MolecularMap — Unified Molecular Intelligence © 2014–2025</footer>
+
+<script>
+let chart, molecules=[];
+
+// Load JSON
+fetch("preventive.json")
+  .then(r=>r.json())
+  .then(data=>{
+    molecules=data;
+    const tbody=document.querySelector("#molTable tbody");
+    data.forEach(m=>{
+      const row=document.createElement("tr");
+      row.innerHTML=`
+        <td><a href="#" onclick="showExplorer('${m.id}');return false;"><strong>${m.name}</strong></a></td>
+        <td>${m.category}</td>
+        <td>${m.effect}</td>
+        <td>${m.links.map(l=>`<a class='btn' href='${l.url}' target='_blank'>${l.label}</a>`).join(" ")}</td>`;
+      tbody.appendChild(row);
+    });
+  });
+
+function filterTable(){
+  const f=document.getElementById("searchBox").value.toLowerCase();
+  document.querySelectorAll("#molTable tbody tr").forEach(r=>{
+    r.style.display=r.innerText.toLowerCase().includes(f)?'':'none';
+  });
+}
+
+function showExplorer(id){
+  const m=molecules.find(x=>x.id===id);
+  if(!m) return;
+
+  const exp=document.getElementById('explorer');
+  exp.style.display="block";
+  document.getElementById('explorerTitle').textContent=m.name;
+  document.getElementById('explorerDesc').textContent=m.description;
+  document.getElementById('explorerExtra').innerHTML=
+    `<p><strong>Biological Target:</strong> ${m.target}</p>
+     <p><strong>Pathways:</strong> ${m.pathways.join(', ')}</p>
+     <p><strong>Health Focus:</strong> ${m.health.join(', ')}</p>`;
+
+  const ctx=document.getElementById('explorerChart').getContext('2d');
+  if(chart) chart.destroy();
+
+  const labels=["Oxidative Stress","Metabolism","Inflammation","Longevity"];
+  const values=m.profile;
+  const colors=["#16a34a","#3b82f6","#f97316","#a855f7"];
+  chart=new Chart(ctx,{
+    type:'doughnut',
+    data:{labels,datasets:[{data:values,backgroundColor:colors}]},
+    options:{plugins:{legend:{position:'bottom'}}}
+  });
+
+  drawGraph(m.graph.nodes,m.graph.links);
+  exp.scrollIntoView({behavior:"smooth"});
+}
+
+function drawGraph(nodes,links){
+  const svg=d3.select("#graph").html("").append("svg")
+    .attr("width","100%").attr("height",420);
+  const width=document.getElementById("graph").clientWidth, height=420;
+
+  const sim=d3.forceSimulation(nodes)
+    .force("link",d3.forceLink(links).id(d=>d.id).distance(100))
+    .force("charge",d3.forceManyBody().strength(-250))
+    .force("center",d3.forceCenter(width/2,height/2));
+
+  const link=svg.append("g").selectAll("line").data(links).enter().append("line")
+    .attr("stroke","#9ca3af").attr("stroke-width",1.5);
+
+  const node=svg.append("g").selectAll("circle").data(nodes).enter().append("circle")
+    .attr("r",8).attr("fill",d=>["#15803d","#22c55e","#84cc16","#4ade80"][d.group%4])
+    .call(drag(sim));
+
+  const label=svg.append("g").selectAll("text").data(nodes).enter().append("text")
+    .attr("font-size","11px").attr("dy",-12).attr("text-anchor","middle").text(d=>d.id);
+
+  sim.on("tick",()=>{
+    link.attr("x1",d=>d.source.x).attr("y1",d=>d.source.y)
+        .attr("x2",d=>d.target.x).attr("y2",d=>d.target.y);
+    node.attr("cx",d=>d.x).attr("cy",d=>d.y);
+    label.attr("x",d=>d.x).attr("y",d=>d.y);
+  });
+
+  function drag(sim){
+    return d3.drag()
+      .on("start",(e,d)=>{if(!e.active)sim.alphaTarget(0.3).restart();d.fx=d.x;d.fy=d.y;})
+      .on("drag",(e,d)=>{d.fx=e.x;d.fy=e.y;})
+      .on("end",(e,d)=>{if(!e.active)sim.alphaTarget(0);d.fx=null;d.fy=null;});
+  }
+}
+</script>
+</body>
+</html>
+

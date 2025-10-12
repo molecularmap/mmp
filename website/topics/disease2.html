@@ -1,0 +1,264 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MolecularMap — Disease Network Explorer</title>
+<meta name="description" content="Explore diseases, drugs, and molecular targets — connecting pathways, biomarkers, and therapeutic opportunities.">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#fafafa;margin:0;color:#1e293b;}
+header{background:linear-gradient(135deg,#dc2626,#7f1d1d);color:white;padding:2.2rem;text-align:center;}
+main{max-width:1200px;margin:2rem auto;padding:0 1.5rem;}
+input[type=text]{width:100%;max-width:420px;padding:0.5rem 0.8rem;font-size:1rem;border:1px solid #ccc;border-radius:6px;margin-bottom:1.5rem;}
+table{width:100%;border-collapse:collapse;background:white;border-radius:8px;overflow:hidden;box-shadow:0 2px 4px rgba(0,0,0,0.05);}
+th,td{padding:0.75rem 1rem;border-bottom:1px solid #e2e8f0;text-align:left;}
+th{background:#dc2626;color:white;text-transform:uppercase;letter-spacing:0.03em;}
+tr:hover{background:#fef2f2;}
+a{color:#dc2626;text-decoration:none;cursor:pointer;}
+.btn{display:inline-block;background:#dc2626;color:white;padding:0.3rem 0.8rem;border-radius:6px;font-size:0.85rem;text-decoration:none;margin-right:0.3rem;transition:background 0.2s;}
+.btn:hover{background:#b91c1c;}
+footer{text-align:center;color:#64748b;padding:2rem;}
+#explorer{background:white;margin-top:2rem;padding:1.5rem;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,0.08);display:none;}
+#explorer h2{color:#dc2626;margin-top:0;}
+#chart-panel{display:flex;flex-wrap:wrap;gap:1rem;align-items:flex-start;}
+canvas{flex:1 1 400px;max-width:500px;}
+#graph{flex:1 1 400px;height:420px;border:1px solid #e5e7eb;border-radius:8px;}
+.tooltip{position:absolute;padding:6px 10px;background:#1e293b;color:white;border-radius:6px;font-size:0.85rem;opacity:0;pointer-events:none;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>💊 Disease Network Explorer</h1>
+  <p>Explore molecules through the lens of health and medicine — connecting pathways, biomarkers, and therapeutic opportunities.</p>
+  <a href="index.html" style="color:#fecaca;text-decoration:none;">← Back to Home</a>
+</header>
+
+<main>
+  <input type="text" id="searchBox" placeholder="🔍 Search diseases or drugs..." onkeyup="filterTable()">
+  <table id="diseaseTable">
+    <thead><tr><th>Disease</th><th>Key Target</th><th>Example Drug</th><th>Links</th></tr></thead>
+    <tbody></tbody>
+  </table>
+
+  <div id="explorer">
+    <h2 id="explorerTitle"></h2>
+    <p id="explorerDesc"></p>
+    <div id="chart-panel">
+      <canvas id="explorerChart"></canvas>
+      <div id="graph"></div>
+    </div>
+    <div id="explorerExtra"></div>
+  </div>
+</main>
+
+<footer>MolecularMap — Unified Molecular Intelligence © 2014–2025</footer>
+
+<script>
+let chart, diseases=[];
+
+// ========= Load Local Example Data =========
+fetch("disease.json")
+  .then(r=>r.json())
+  .then(data=>{
+    diseases=data;
+    const tbody=document.querySelector("#diseaseTable tbody");
+    data.forEach(d=>{
+      const row=document.createElement("tr");
+      row.innerHTML=`
+        <td><a href="#" onclick="showExplorer('${d.id}');return false;"><strong>${d.name}</strong></a></td>
+        <td>${d.target}</td>
+        <td>${d.drug}</td>
+        <td>${d.links.map(l=>`<a class='btn' href='${l.url}' target='_blank'>${l.label}</a>`).join(" ")}</td>`;
+      tbody.appendChild(row);
+    });
+  });
+
+// ========= Table Filtering =========
+function filterTable(){
+  const f=document.getElementById("searchBox").value.toLowerCase();
+  document.querySelectorAll("#diseaseTable tbody tr").forEach(r=>{
+    r.style.display=r.innerText.toLowerCase().includes(f)?'':'none';
+  });
+}
+
+// ========= Explorer Display =========
+async function showExplorer(id){
+  const d=diseases.find(x=>x.id===id);
+  if(!d) return;
+  const exp=document.getElementById('explorer');
+  exp.style.display="block";
+  document.getElementById('explorerTitle').textContent=d.name;
+  document.getElementById('explorerDesc').textContent=d.description;
+  document.getElementById('explorerExtra').innerHTML=
+    `<p><strong>Key Target:</strong> ${d.target}</p>
+     <p><strong>Example Drug:</strong> ${d.drug}</p>
+     <div id="liveData"><em>Fetching live disease data...</em></div>`;
+
+  const ctx=document.getElementById('explorerChart').getContext('2d');
+  if(chart) chart.destroy();
+  chart=new Chart(ctx,{
+    type:'radar',
+    data:{
+      labels:["Genetic","Pathway","Drug","Clinical","Omics"],
+      datasets:[{
+        label:"Molecular Insight",
+        data:d.profile,
+        backgroundColor:"rgba(220,38,38,0.2)",
+        borderColor:"#dc2626",
+        borderWidth:2
+      }]
+    },
+    options:{plugins:{legend:{display:false}},scales:{r:{angleLines:{color:"#fca5a5"}}}}
+  });
+
+  drawGraph(d.graph.nodes,d.graph.links);
+  exp.scrollIntoView({behavior:"smooth"});
+
+  // link to MolecularMap
+  const molecule = (d.relatedMolecules && d.relatedMolecules.length) ? d.relatedMolecules[0] : d.target.split(",")[0];
+  document.getElementById('explorerExtra').innerHTML += `
+    <div style="margin-top:1rem;">
+      <a class="btn" href="molecularmap.html?q=${encodeURIComponent(molecule)}" target="_blank">
+        🌐 View Related Molecules in MolecularMap
+      </a>
+    </div>`;
+
+  const live=await fetchLiveData(d.name);
+  document.getElementById("liveData").innerHTML=live;
+}
+
+// ========= Graph + Halo Visualization =========
+function drawGraph(nodes,links){
+  const width=document.getElementById("graph").clientWidth, height=420;
+  const svg=d3.select("#graph").html("").append("svg").attr("width","100%").attr("height",height);
+  const tooltip=d3.select("body").append("div").attr("class","tooltip");
+
+  const color=d3.scaleOrdinal().domain(["disease","target","drug","pathway"])
+    .range(["#dc2626","#4ade80","#0ea5e9","#eab308"]);
+
+  const sim=d3.forceSimulation(nodes)
+    .force("link",d3.forceLink(links).id(d=>d.id).distance(100))
+    .force("charge",d3.forceManyBody().strength(-230))
+    .force("center",d3.forceCenter(width/2,height/2));
+
+  const haloLayer=svg.append("g");
+  const linkLayer=svg.append("g");
+  const nodeLayer=svg.append("g");
+  const labelLayer=svg.append("g");
+
+  const link=linkLayer.selectAll("line").data(links).enter().append("line")
+    .attr("stroke","#9ca3af").attr("stroke-width",1.5);
+
+  const node=nodeLayer.selectAll("circle").data(nodes).enter().append("circle")
+    .attr("r",8)
+    .attr("fill",d=>color(d.group))
+    .on("mouseover",(e,d)=>{
+      tooltip.transition().style("opacity",1);
+      tooltip.html(`<strong>${d.id}</strong><br>Group: ${d.group}`)
+             .style("left",(e.pageX+10)+"px").style("top",(e.pageY-20)+"px");
+      halos.filter(h=>h[0]===d.group).transition().attr("opacity",0.2);
+    })
+    .on("mouseout",(e,d)=>{tooltip.transition().style("opacity",0);halos.transition().attr("opacity",0.08);})
+    .on("click",(e,d)=>{
+      if(d.group==="disease"){
+        window.open(`disease.html?q=${encodeURIComponent(d.id)}`,"_blank");
+      }else{
+        window.open(`molecularmap.html?q=${encodeURIComponent(d.id)}`,"_blank");
+      }
+    })
+    .call(d3.drag()
+      .on("start",(e,d)=>{if(!e.active)sim.alphaTarget(0.3).restart();d.fx=d.x;d.fy=d.y;})
+      .on("drag",(e,d)=>{d.fx=e.x;d.fy=e.y;})
+      .on("end",(e,d)=>{if(!e.active)sim.alphaTarget(0);d.fx=null;d.fy=null;}));
+
+  const label=labelLayer.selectAll("text").data(nodes).enter().append("text")
+    .attr("font-size","11px").attr("dy",-10).attr("text-anchor","middle").text(d=>d.id);
+
+  const clusterGroups=d3.group(nodes,d=>d.group);
+  const halos=haloLayer.selectAll("circle").data(Array.from(clusterGroups.entries()))
+    .enter().append("circle")
+    .attr("fill",d=>color(d[0]))
+    .attr("opacity",0.08)
+    .attr("stroke",d=>color(d[0]))
+    .attr("stroke-width",2)
+    .attr("r",120);
+
+  // pulse animation
+  function pulse(){
+    halos.transition().duration(3000).attr("opacity",0.04)
+      .transition().duration(3000).attr("opacity",0.1).on("end",pulse);
+  }
+  pulse();
+
+  sim.on("tick",()=>{
+    halos
+      .attr("cx",d=>d3.mean(d[1],n=>n.x))
+      .attr("cy",d=>d3.mean(d[1],n=>n.y))
+      .attr("r",d=>{
+        const xs=d[1].map(n=>n.x), ys=d[1].map(n=>n.y);
+        const dx=d3.max(xs)-d3.min(xs), dy=d3.max(ys)-d3.min(ys);
+        return Math.sqrt(dx*dx+dy*dy)/2+60;
+      });
+    link.attr("x1",d=>d.source.x).attr("y1",d=>d.source.y)
+        .attr("x2",d=>d.target.x).attr("y2",d=>d.target.y);
+    node.attr("cx",d=>d.x).attr("cy",d=>d.y);
+    label.attr("x",d=>d.x).attr("y",d=>d.y);
+  });
+}
+
+// ========= Live Biomedical APIs =========
+async function fetchLiveData(disease){
+  try{
+    const [disgenet,drugbank,clinical]=await Promise.all([
+      fetchDisGeNET(disease),
+      fetchDrugBank(disease),
+      fetchClinicalTrials(disease)
+    ]);
+    return `
+      <h3>🧬 Disease Associations (DisGeNET)</h3><p>${disgenet}</p>
+      <h3>💊 Drugs (FDA / FAERS)</h3><p>${drugbank}</p>
+      <h3>🏥 Clinical Trials</h3><p>${clinical}</p>`;
+  }catch(e){return "<p><em>Could not fetch live data.</em></p>";}
+}
+
+async function fetchDisGeNET(name){
+  const url=`https://www.disgenet.org/api/gda/gene/diseaseName/${encodeURIComponent(name)}?source=ALL`;
+  const res=await fetch(url,{headers:{'Accept':'application/json'}});
+  if(!res.ok) return "No data.";
+  const data=await res.json();
+  return data.slice(0,5).map(d=>`${d.gene_symbol} (${d.score.toFixed(2)})`).join(", ");
+}
+
+async function fetchDrugBank(name){
+  const url=`https://api.fda.gov/drug/event.json?search=patient.drug.openfda.substance_name:${encodeURIComponent(name)}&limit=5`;
+  const res=await fetch(url);
+  if(!res.ok) return "No drugs found.";
+  const data=await res.json();
+  return data.results ? data.results.map(r=>r.patient.drug[0]?.openfda?.brand_name?.[0]||"Unknown").join(", ") : "—";
+}
+
+async function fetchClinicalTrials(name){
+  const url=`https://clinicaltrials.gov/api/query/study_fields?expr=${encodeURIComponent(name)}&fields=BriefTitle&min_rnk=1&max_rnk=3&fmt=json`;
+  const res=await fetch(url);
+  if(!res.ok) return "No trials found.";
+  const data=await res.json();
+  return data.StudyFieldsResponse.StudyFields.map(s=>s.BriefTitle[0]).join("; ");
+}
+
+// ========= Handle incoming query from molecularmap.html =========
+const params = new URLSearchParams(window.location.search);
+const q = params.get("q");
+if(q){
+  document.getElementById("searchBox").value=q;
+  setTimeout(()=>{
+    const match=diseases.find(d=>d.name.toLowerCase().includes(q.toLowerCase()));
+    if(match) showExplorer(match.id);
+  },1000);
+}
+</script>
+</body>
+</html>
+

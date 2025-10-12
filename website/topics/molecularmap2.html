@@ -1,0 +1,144 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MolecularMap — Unified Molecular Graph</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+  body{font-family:'Segoe UI',system-ui,sans-serif;margin:0;background:#fafafa;color:#1e293b;overflow:hidden;}
+  header{background:linear-gradient(135deg,#2563eb,#15803d);color:white;text-align:center;padding:1.8rem;}
+  #graph{width:100vw;height:90vh;background:white;}
+  .tooltip{position:absolute;padding:6px 10px;background:#1e293b;color:white;border-radius:6px;
+            pointer-events:none;font-size:0.85rem;opacity:0;}
+  .legend{position:absolute;top:1rem;right:1rem;background:white;padding:0.5rem 0.8rem;
+           border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.15);}
+  .legend span{display:inline-block;width:12px;height:12px;margin-right:6px;border-radius:2px;}
+</style>
+</head>
+<body>
+<header>
+  <h1>🧬 Unified Molecular Map</h1>
+  <p>Zoom, pan, and explore how nutrition, health, and disease molecules interconnect.</p>
+  <a href="index.html" style="color:#a7f3d0;text-decoration:none;">← Back to Home</a>
+</header>
+
+<div id="graph"></div>
+<div class="tooltip" id="tooltip"></div>
+<div class="legend">
+  <div><span style="background:#eab308"></span> Nutrition</div>
+  <div><span style="background:#16a34a"></span> Preventive</div>
+  <div><span style="background:#0ea5e9"></span> Bioassay</div>
+  <div><span style="background:#dc2626"></span> Disease</div>
+  <div><span style="background:#8b5cf6"></span> Cross-Module</div>
+</div>
+
+<script>
+const width = window.innerWidth, height = window.innerHeight*0.9;
+
+// Load modules
+Promise.all([
+  fetch("nutrition.json").then(r=>r.json()),
+  fetch("preventive.json").then(r=>r.json())
+  // later add fetch("bioassay.json"), fetch("disease.json")
+]).then(([nutrition,preventive])=>{
+  const nodes=[], links=[], added=new Map();
+
+  function addNode(id, group, url){
+    if(!added.has(id)) added.set(id,{id,group,modules:new Set([group]),url});
+    else added.get(id).modules.add(group);
+  }
+
+  function addLink(a,b,type){
+    links.push({source:a,target:b,type});
+  }
+
+  // Nutrition
+  nutrition.forEach(n=>{
+    addNode(n.name,"nutrition","nutrition.html?id="+n.id);
+    n.graph.nodes.forEach(x=>addNode(x.id,"nutrition","#"));
+    n.graph.links.forEach(l=>addLink(l.source,l.target,"nutrition"));
+  });
+
+  // Preventive
+  preventive.forEach(p=>{
+    addNode(p.name,"preventive","preventive.html?id="+p.id);
+    p.graph.nodes.forEach(x=>addNode(x.id,"preventive","#"));
+    p.graph.links.forEach(l=>addLink(l.source,l.target,"preventive"));
+  });
+
+  // Cross-module links (shared nodes)
+  const allNodes=[...added.values()];
+  for(let i=0;i<allNodes.length;i++){
+    for(let j=i+1;j<allNodes.length;j++){
+      const a=allNodes[i], b=allNodes[j];
+      if(a.id===b.id && a.modules.size>1){
+        addLink(a.id,b.id,"cross");
+      }
+    }
+  }
+
+  drawUnifiedGraph([...added.values()],links);
+});
+
+function drawUnifiedGraph(nodes,links){
+  const svg=d3.select("#graph").append("svg")
+              .attr("width",width).attr("height",height)
+              .call(d3.zoom().scaleExtent([0.3,5]).on("zoom",e=>{
+                g.attr("transform",e.transform);
+              }))
+              .append("g");
+
+  const g=svg.append("g");
+  const tooltip=d3.select("#tooltip");
+
+  const color=d3.scaleOrdinal()
+    .domain(["nutrition","preventive","bioassay","disease","cross"])
+    .range(["#eab308","#16a34a","#0ea5e9","#dc2626","#8b5cf6"]);
+
+  const sim=d3.forceSimulation(nodes)
+    .force("link",d3.forceLink(links).id(d=>d.id).distance(d=>d.type==="cross"?40:80))
+    .force("charge",d3.forceManyBody().strength(-180))
+    .force("center",d3.forceCenter(width/2,height/2));
+
+  const link=g.append("g").selectAll("line").data(links).enter().append("line")
+    .attr("stroke",d=>d.type==="cross"?"#8b5cf6":"#cbd5e1")
+    .attr("stroke-width",d=>d.type==="cross"?2:1);
+
+  const node=g.append("g").selectAll("circle").data(nodes).enter().append("circle")
+    .attr("r",6)
+    .attr("fill",d=>color([...d.modules][0]||"cross"))
+    .attr("stroke",d=>d.modules.size>1?"#8b5cf6":"white")
+    .attr("stroke-width",d=>d.modules.size>1?2:1)
+    .on("mouseover",(e,d)=>{
+      tooltip.transition().style("opacity",1);
+      tooltip.html(`<strong>${d.id}</strong><br>${[...d.modules].join(", ")}`)
+             .style("left",(e.pageX+10)+"px")
+             .style("top",(e.pageY-20)+"px");
+    })
+    .on("mouseout",()=>tooltip.transition().style("opacity",0))
+    .on("click",(e,d)=>{ if(d.url!=="#") window.open(d.url,"_blank"); })
+    .call(drag(sim));
+
+  const label=g.append("g").selectAll("text").data(nodes).enter().append("text")
+    .attr("font-size","10px").attr("dy",-10).attr("text-anchor","middle")
+    .text(d=>d.id);
+
+  sim.on("tick",()=>{
+    link.attr("x1",d=>d.source.x).attr("y1",d=>d.source.y)
+        .attr("x2",d=>d.target.x).attr("y2",d=>d.target.y);
+    node.attr("cx",d=>d.x).attr("cy",d=>d.y);
+    label.attr("x",d=>d.x).attr("y",d=>d.y);
+  });
+
+  function drag(sim){
+    return d3.drag()
+      .on("start",(e,d)=>{if(!e.active)sim.alphaTarget(0.3).restart();d.fx=d.x;d.fy=d.y;})
+      .on("drag",(e,d)=>{d.fx=e.x;d.fy=e.y;})
+      .on("end",(e,d)=>{if(!e.active)sim.alphaTarget(0);d.fx=null;d.fy=null;});
+  }
+}
+</script>
+</body>
+</html>
+

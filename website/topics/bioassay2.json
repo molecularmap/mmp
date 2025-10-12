@@ -1,0 +1,78 @@
+
+[
+  {
+    "id": "PubChem",
+    "title": "PubChem BioAssay",
+    "category": "High-Throughput Screening",
+    "scope": "Millions of assays, small-molecule readouts, activity data.",
+    "description": "The world’s largest open bioassay database. Contains millions of high-throughput screening experiments linking small molecules to biological targets.",
+    "size": "~1.4M assays, 300M data points",
+    "use": "Activity prediction, target discovery, QSAR modeling.",
+    "links": [
+      {"label": "Browse", "url": "https://pubchem.ncbi.nlm.nih.gov/bioassay/"},
+      {"label": "API", "url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/"}
+    ]
+  },
+  {
+    "id": "ATILA",
+    "title": "ATILA Biosystems",
+    "category": "Clinical Diagnostics",
+    "scope": "FDA-cleared diagnostic kits for infectious diseases, cancer, and biomarkers.",
+    "description": "Developer of FDA-approved and research-grade molecular diagnostic kits. Applications include infectious disease detection, oncology biomarkers, and rapid clinical assays.",
+    "size": "~100 diagnostic products",
+    "use": "Clinical validation, biomarker AI models, translational research.",
+    "links": [
+      {"label": "Website", "url": "https://atilabiosystems.com/"}
+    ]
+  },
+  {
+    "id": "BAO",
+    "title": "BioAssay Ontology (BAO)",
+    "category": "Ontology / Knowledge Representation",
+    "scope": "Structured definitions of assay types, endpoints, and technologies.",
+    "description": "Ontology defining relationships between assay formats, endpoints, and technologies, enabling semantic AI interpretation of bioassay data.",
+    "size": "~3,000 ontology terms",
+    "use": "Data harmonization, reasoning graph alignment, assay standardization.",
+    "links": [
+      {"label": "Browse", "url": "https://bioassayontology.org/"}
+    ]
+  },
+  {
+    "id": "CTGOV",
+    "title": "ClinicalTrials.gov",
+    "category": "Clinical Studies",
+    "scope": "Global registry of diagnostic and therapeutic trials with molecular endpoints.",
+    "description": "Global registry of human clinical studies maintained by the NIH. Provides structured information on diagnostic and interventional trials.",
+    "size": "~480K studies",
+    "use": "Clinical outcome prediction, drug repurposing, safety profiling.",
+    "links": [
+      {"label": "Search", "url": "https://clinicaltrials.gov/"},
+      {"label": "API", "url": "https://clinicaltrials.gov/api/"}
+    ]
+  },
+  {
+    "id": "HumanProteinAtlas",
+    "title": "Human Protein Atlas",
+    "category": "Protein Expression / Biomarkers",
+    "scope": "Expression data for 26K human proteins across tissues and diseases.",
+    "description": "Tissue-level and single-cell protein expression database mapping 26,000 proteins across normal and disease states.",
+    "size": "~10M images, 26K proteins",
+    "use": "Biomarker discovery, AI-assisted histopathology, diagnostics.",
+    "links": [
+      {"label": "Browse", "url": "https://www.proteinatlas.org/"}
+    ]
+  },
+  {
+    "id": "LDTs",
+    "title": "Laboratory Diagnostic Tests (LDTs)",
+    "category": "Clinical / Hospital Data",
+    "scope": "In-house diagnostic assays used for precision medicine and patient stratification.",
+    "description": "Curated data from clinical labs and partners. Includes molecular test performance metrics and patient-level validation studies.",
+    "size": "~500 curated diagnostic assays",
+    "use": "Precision diagnostics, AI-assisted result interpretation.",
+    "links": [
+      {"label": "Preview", "url": "#"}
+    ]
+  }
+]
+

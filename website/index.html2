@@ -362,182 +362,49 @@ document.addEventListener("click", (e) => {
   <!-- Features -->
   <div class="features">
     <div class="feature">
-      <div class="feature-icon">🧬</div>
+      <div class="feature-icon">❤️</div>
       <div>
-        <a href="./topics/disease.html" /><h3>Disease-Centered Search</h3> </a>
-<div style="text-align:center; margin-top:1rem;">
-  <a href="./topics/disease.html"
-     style="display:inline-block;
-            background:#dc2626;
-            color:white;
-            padding:0.6rem 1.2rem;
-            border-radius:8px;
-            text-decoration:none;
-            font-weight:500;
-            transition:background 0.2s;">
-     💊 Explore Disease Networks
-  </a>
-</div>
-
+        <h3>Disease-Centered Search</h3>
         <p>Explore molecules through the lens of health and medicine — from Alzheimer’s biomarkers to diabetes drugs — 
-         connecting pathways, compounds, and therapeutic opportunities.</p>
+           connecting pathways, compounds, and therapeutic opportunities.</p>
       </div>
-   </div>
+    </div>
 
-
-<div class="feature">
-<div class="feature-icon">🌿</div>
-<div>
-<a href="./topics/nutrition.html" /><h3>Nutrition-Centered Search</h3></a>
-<div style="text-align:center; margin-top:1rem;">
-  <a href="./topics/nutrition.html"
-     style="display:inline-block;
-            background:#eab308;
-            color:white;
-            padding:0.6rem 1.2rem;
-            border-radius:8px;
-            text-decoration:none;
-            font-weight:500;
-            transition:background 0.2s;">
-      Explore Nutrition Molecules
-  </a>
-</div>
-
-  <p>Uncover how nutrients, vitamins, and natural compounds shape metabolism, cellular pathways, and overall wellness.
-  From plant-derived flavonoids to essential amino acids, MolecularMap connects dietary molecules to their biological targets, 
-  revealing how what we eat translates into the molecular language of life.
-  Explore the nutrition–metabolism interface through curated data from FoodDB, HMDB, and KEGG Nutrient Pathways.</p>
-</div>
-</div>
-
-
-<div class="feature"><div class="feature-icon">🍎</div>
-    <div>
-<a href="./topics/preventive.html"> <h3>Preventive Health-Centered Search</h3> </a>
-<div style="text-align:center; margin-top:1rem;">
-  <a href="./topics/preventive.html"
-     style="display:inline-block;
-            background:#15803d;
-            color:white;
-            padding:0.6rem 1.2rem;
-            border-radius:8px;
-            text-decoration:none;
-            font-weight:500;
-            transition:background 0.2s;">
-      Explore Preventive Health Molecules ->
-  </a>
-</div>
-
-    <p>Discover molecules that support resilience and longevity — tracing how lifestyle, supplements, and molecular modulators protect against disease onset. Map antioxidants, metabolic regulators, and anti-aging compounds to biological networks that sustain long-term health.</p>
-
-</div>
-</div>
-
-
-<div class="feature"><div class="feature-icon">🧪</div>
-<div>
-<a href="./topics/bioassay.html "/><h3>Bioassay & Diagnostics-Centered Search</h3> </a>
-<div style="text-align:center; margin-top:1rem;">
-  <a href="/topics/bioassay.html"
-     style="display:inline-block; background:#0f766e; color:white;
-            padding:0.6rem 1.2rem; border-radius:8px;
-            text-decoration:none; font-weight:500;
-            transition:background 0.2s;">
-     Explore Bioassays & Diagnostics ->
-  </a>
-</div>
-
-<p>Explore molecules through the lens of experimental validation and clinical measurement — from high-throughput screening assays to diagnostic biomarkers.
-MolecularMap integrates bioassay data, clinical diagnostics, and multi-omics readouts, linking molecular signatures to therapeutic efficacy and real-world health outcomes.
-By connecting bench-level assays with bedside data, this module enables AI to learn directly from validated biological evidence — bridging discovery, diagnostics, and deployment.</p>
-
-
-</div></div>
-
-
-
-<div class="feature"><div class="feature-icon">🧹</div>
-  <div>
-    <a href="/topics/datasets.html"/> <h3> Curated for Machine Learning</h3></a>
-  <div style="text-align:center; margin-top:1rem;">
-    <a href="/topics/datasets.html"
-       style="display:inline-block; background:#0f766e; color:white;
-              padding:0.6rem 1.2rem; border-radius:8px;
-              text-decoration:none; font-weight:500;
-              transition:background 0.2s;">
-       View Sample Datasets ->
-    </a>
+    <div class="feature">
+      <div class="feature-icon">🧹</div>
+      <div>
+        <h3>Curated for Machine Learning</h3>
+        <p>Raw molecular data from across the web is scanned, standardized, and cleaned — 
+           producing AI-ready datasets in JSON, RDF, or graph formats for training modern ML models.</p>
       </div>
-  <p>
-    MolecularMap continuously scans and aggregates raw molecular data from public and proprietary sources,
-    standardizing and cleaning it into AI-ready formats — including JSON, RDF, and graph representations.
-    Each dataset is optimized for modern machine learning pipelines, enabling reproducible, multimodal training
-    across chemistry, biology, and medicine.
-  </p>
     </div>
-</div>
 
-<div class="feature"><div class="feature-icon">🔗</div>
-  <div>
-  <a href="/topics/relationships4.html"/><h3>Multimodal Molecular Relationships</h3></a>
-<div style="text-align:center; margin-top:1rem;">
-  <a href="/topics/relationships.html" 
-     style="display:inline-block; background:#0f766e; color:white; 
-            padding:0.6rem 1.2rem; border-radius:8px; 
-            text-decoration:none; font-weight:500; 
-            transition:background 0.2s;">
-     Explore Relationships ->
-  </a>
-</div>
-
-    <p>MolecularMap unifies chemical reactions, biological pathways, and semantic ontologies into a single reasoning graph.
-       Solid edges represent chemical reactions, dashed lines show biological pathways, and dotted links encode semantic relationships across molecular, cellular, and clinical data.
-       This multimodal structure enables AI models — and human researchers — to traverse chemistry, biology, and medicine seamlessly.</p>
-  </div>
-</div>
-
-
-<div class="feature">
-  <div class="feature-icon">🔊</div>
-    <div>
-<a href="/topics/audio.html"><h3>Sonified Molecules</h3></a>
-<div style="text-align:center; margin-top:1rem;">
-<a href="/topics/audio.html" 
-   style="display:inline-block;margin-top:1rem;background:var(--primary);
-          color:white;padding:0.6rem 1.2rem;border-radius:6px;
-          text-decoration:none;">
-   Explore Molecular Audio Maps →
-</a>
-</div>
-
-<p>
-Every molecule carries a unique audio fingerprint through our patent-protected sonification framework, optimized for AI learning.
-These audio-based molecular representations train faster, demand less GPU computation, and enhance multimodal model accuracy.
-From drug discovery to next-generation batteries and advanced biomaterials, MolecularMap enables AI to learn directly from the universal language of molecules — through sound.
-</p>
+    <div class="feature">
+      <div class="feature-icon">🔗</div>
+      <div>
+        <h3>Multimodal Molecular Relationships</h3>
+        <p>Chemical reactions (solid), biological pathways (dashed), and semantic ontologies (dotted) — 
+           represented in a unified graph that enables reasoning across chemistry, biology, and life sciences.</p>
+      </div>
     </div>
-</div>
 
-<div class="feature">
-  <div class="feature-icon">🤖</div>
-  <div>
-  <a href="./topics/mmap.html"><h3>The ImageNet of Molecules</h3></a>
-<div style="text-align:center; margin-top:1rem;">
-<a href="./topics/imagenet.html" 
-   style="display:inline-block;margin-top:1rem;background:var(--primary);
-          color:white;padding:0.6rem 1.2rem;border-radius:6px;
-          text-decoration:none;">
-   Explore Molecular Maps →
-</a>
-</a>
+    <div class="feature">
+      <div class="feature-icon">🔊</div>
+      <div>
+        <h3>Sonified Molecules</h3>
+        <p>Every molecule has an audio fingerprint via our patent-protected sonification methods — 
+           enabling novel auditory AI models and multimodal training beyond text, graphs, and images.</p>
+      </div>
+    </div>
 
-    <p>MolecularMap isn’t just a knowledge graph — it’s a living atlas of molecular intelligence.
-    Our platform curates and visualizes millions of molecular connections — from drug mechanisms and metabolic pathways to battery materials, catalysts, and climate-relevant reactions.
-    Explore this universe interactively through AI-powered search and dynamic molecular maps.</p>
-  </div>
-</div>
-
-
+    <div class="feature">
+      <div class="feature-icon">🤖</div>
+      <div>
+        <h3>The ImageNet of Molecules</h3>
+        <p>MolecularMap isn’t just a knowledge graph — it’s the foundational dataset for molecular AI, 
+           built to fuel drug discovery, health prediction, and scientific breakthroughs at global scale.</p>
+      </div>
+    </div>
   </div>
 
   <!-- Graph Demo -->

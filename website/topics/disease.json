@@ -1,0 +1,94 @@
+
+[
+  {
+    "id": "alzheimers",
+    "name": "Alzheimer's Disease",
+    "target": "APP, Tau",
+    "drug": "Donepezil",
+    "description": "A neurodegenerative disorder characterized by amyloid-β plaques and tau tangles leading to progressive cognitive decline. It serves as a model for studying protein aggregation and neuronal dysfunction.",
+    "profile": [85, 70, 60, 55, 40],
+    "relatedMolecules": ["APP", "Tau", "Curcumin", "Resveratrol"],
+    "graph": {
+      "nodes": [
+        {"id": "Alzheimer's Disease", "group": "disease"},
+        {"id": "APP", "group": "target"},
+        {"id": "Tau", "group": "target"},
+        {"id": "Amyloid-β", "group": "pathway"},
+        {"id": "Curcumin", "group": "drug"},
+        {"id": "Resveratrol", "group": "nutrient"}
+      ],
+      "links": [
+        {"source": "Alzheimer's Disease", "target": "APP"},
+        {"source": "Alzheimer's Disease", "target": "Tau"},
+        {"source": "APP", "target": "Amyloid-β"},
+        {"source": "Tau", "target": "Curcumin"},
+        {"source": "Curcumin", "target": "Resveratrol"}
+      ]
+    },
+    "links": [
+      {"label": "PubMed", "url": "https://pubmed.ncbi.nlm.nih.gov/?term=Alzheimer%27s+disease"},
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Alzheimer%27s_disease"}
+    ]
+  },
+
+  {
+    "id": "diabetes",
+    "name": "Type 2 Diabetes",
+    "target": "GLUT4, AMPK",
+    "drug": "Metformin",
+    "description": "A metabolic disorder resulting in insulin resistance and hyperglycemia, linked to obesity and impaired glucose uptake. Type 2 diabetes involves molecular pathways governing metabolism, inflammation, and mitochondrial function.",
+    "profile": [75, 85, 70, 60, 50],
+    "relatedMolecules": ["AMPK", "Metformin", "Resveratrol", "Insulin"],
+    "graph": {
+      "nodes": [
+        {"id": "Type 2 Diabetes", "group": "disease"},
+        {"id": "AMPK", "group": "target"},
+        {"id": "GLUT4", "group": "target"},
+        {"id": "Metformin", "group": "drug"},
+        {"id": "Insulin", "group": "pathway"},
+        {"id": "Resveratrol", "group": "nutrient"}
+      ],
+      "links": [
+        {"source": "Type 2 Diabetes", "target": "AMPK"},
+        {"source": "Type 2 Diabetes", "target": "GLUT4"},
+        {"source": "AMPK", "target": "Metformin"},
+        {"source": "GLUT4", "target": "Insulin"},
+        {"source": "AMPK", "target": "Resveratrol"}
+      ]
+    },
+    "links": [
+      {"label": "PubMed", "url": "https://pubmed.ncbi.nlm.nih.gov/?term=Type+2+Diabetes"},
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Diabetes_mellitus_type_2"}
+    ]
+  },
+
+  {
+    "id": "breastcancer",
+    "name": "Breast Cancer",
+    "target": "HER2, BRCA1",
+    "drug": "Trastuzumab",
+    "description": "A heterogeneous disease characterized by uncontrolled proliferation of breast epithelial cells, often involving hormonal and HER2 receptor signaling pathways. It serves as a key model for targeted and precision oncology.",
+    "profile": [90, 80, 85, 70, 60],
+    "relatedMolecules": ["HER2", "BRCA1", "Trastuzumab", "Estrogen"],
+    "graph": {
+      "nodes": [
+        {"id": "Breast Cancer", "group": "disease"},
+        {"id": "HER2", "group": "target"},
+        {"id": "BRCA1", "group": "target"},
+        {"id": "Trastuzumab", "group": "drug"},
+        {"id": "Estrogen", "group": "pathway"}
+      ],
+      "links": [
+        {"source": "Breast Cancer", "target": "HER2"},
+        {"source": "Breast Cancer", "target": "BRCA1"},
+        {"source": "HER2", "target": "Trastuzumab"},
+        {"source": "Estrogen", "target": "HER2"}
+      ]
+    },
+    "links": [
+      {"label": "PubMed", "url": "https://pubmed.ncbi.nlm.nih.gov/?term=breast+cancer"},
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Breast_cancer"}
+    ]
+  }
+]
+

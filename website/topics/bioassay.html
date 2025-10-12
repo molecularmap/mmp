@@ -1,0 +1,279 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MolecularMap — Bioassay & Diagnostics</title>
+  <meta name="description" content="Explore bioassay, biomarker, and diagnostic datasets integrated for AI discovery.">
+  <style>
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #fafafa;
+      margin: 0;
+      color: #1e293b;
+    }
+    header {
+      background: linear-gradient(135deg, #0f766e, #083344);
+      color: white;
+      padding: 2.5rem;
+      text-align: center;
+    }
+    main {
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    input[type="text"] {
+      width: 100%;
+      max-width: 400px;
+      padding: 0.5rem 0.8rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    th, td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid #e2e8f0;
+      text-align: left;
+    }
+    th {
+      background: #0f766e;
+      color: white;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    tr:hover {
+      background: #f1f5f9;
+    }
+    footer {
+      text-align: center;
+      color: #64748b;
+      padding: 2rem;
+    }
+    a {
+      color: #0f766e;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .btn {
+      display: inline-block;
+      background: #0f766e;
+      color: white;
+      padding: 0.3rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      text-decoration: none;
+      margin-right: 0.3rem;
+      transition: background 0.2s;
+    }
+    .btn:hover {
+      background: #115e59;
+    }
+    /* Modal styling */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.5);
+    }
+    .modal-content {
+      background-color: white;
+      margin: 8% auto;
+      padding: 2rem;
+      border-radius: 10px;
+      max-width: 600px;
+      position: relative;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    .close {
+      position: absolute;
+      top: 10px;
+      right: 14px;
+      color: #555;
+      font-size: 22px;
+      cursor: pointer;
+    }
+    .close:hover { color: #000; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🧪 Bioassay & Diagnostics-Centered Search</h1>
+  <p>Linking molecular experiments, clinical diagnostics, and AI-driven insights.</p>
+  <a href="/index.html" style="color:#a0f0d0;text-decoration:none;">← Back to Home</a>
+</header>
+
+<main>
+  <section>
+    <input type="text" id="searchBox" placeholder="🔍 Search assays... (e.g. biomarker, toxicity, COVID, ATILA)" onkeyup="filterTable()">
+
+    <table id="assayTable">
+      <thead>
+        <tr>
+          <th>Dataset / Source</th>
+          <th>Category</th>
+          <th>Scope</th>
+          <th>Links</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><a onclick="openModal('PubChem')"><strong>PubChem BioAssay</strong></a></td>
+          <td>High-Throughput Screening</td>
+          <td>Millions of assays, small-molecule readouts, activity data.</td>
+          <td>
+            <a class="btn" href="https://pubchem.ncbi.nlm.nih.gov/bioassay/" target="_blank">Browse</a>
+            <a class="btn" href="https://pubchem.ncbi.nlm.nih.gov/rest/pug/" target="_blank">API</a>
+          </td>
+        </tr>
+        <tr>
+          <td><a onclick="openModal('ATILA')"><strong>ATILA Biosystems</strong></a></td>
+          <td>Clinical Diagnostics</td>
+          <td>FDA-cleared diagnostic kits for infectious diseases, cancer, and biomarkers.</td>
+          <td>
+            <a class="btn" href="https://atilabiosystems.com/" target="_blank">Website</a>
+          </td>
+        </tr>
+        <tr>
+          <td><a onclick="openModal('BAO')"><strong>BioAssay Ontology (BAO)</strong></a></td>
+          <td>Ontology / Knowledge Representation</td>
+          <td>Structured definitions of assay types, endpoints, and technologies.</td>
+          <td>
+            <a class="btn" href="https://bioassayontology.org/" target="_blank">Browse</a>
+          </td>
+        </tr>
+        <tr>
+          <td><a onclick="openModal('CTGOV')"><strong>ClinicalTrials.gov</strong></a></td>
+          <td>Clinical Studies</td>
+          <td>Global registry of diagnostic and therapeutic trials with molecular endpoints.</td>
+          <td>
+            <a class="btn" href="https://clinicaltrials.gov/" target="_blank">Search</a>
+            <a class="btn" href="https://clinicaltrials.gov/api/" target="_blank">API</a>
+          </td>
+        </tr>
+        <tr>
+          <td><a onclick="openModal('HumanProteinAtlas')"><strong>Human Protein Atlas</strong></a></td>
+          <td>Protein Expression / Biomarkers</td>
+          <td>Expression data for 26K human proteins across tissues and diseases.</td>
+          <td>
+            <a class="btn" href="https://www.proteinatlas.org/" target="_blank">Browse</a>
+          </td>
+        </tr>
+        <tr>
+          <td><a onclick="openModal('LDTs')"><strong>Laboratory Diagnostic Tests (LDTs)</strong></a></td>
+          <td>Clinical / Hospital Data</td>
+          <td>In-house diagnostic assays used for precision medicine and patient stratification.</td>
+          <td>
+            <a class="btn" href="#" onclick="alert('Private/Partner data — coming soon');return false;">Preview</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+</main>
+
+<footer>
+  MolecularMap — Unified Molecular Intelligence © 2014–2025
+</footer>
+
+<!-- Modal for Details -->
+<div id="modal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <h3 id="modalTitle"></h3>
+    <p id="modalDescription"></p>
+    <p><strong>Data Volume:</strong> <span id="modalSize"></span></p>
+    <p><strong>Applications:</strong> <span id="modalUse"></span></p>
+  </div>
+</div>
+
+<script>
+function filterTable() {
+  const input = document.getElementById('searchBox');
+  const filter = input.value.toLowerCase();
+  const rows = document.querySelectorAll('#assayTable tbody tr');
+  rows.forEach(row => {
+    const text = row.innerText.toLowerCase();
+    row.style.display = text.includes(filter) ? '' : 'none';
+  });
+}
+
+const assays = {
+  PubChem: {
+    title: "PubChem BioAssay",
+    desc: "The world’s largest open bioassay database. Contains millions of high-throughput screening experiments linking small molecules to biological targets.",
+    size: "~1.4M assays, 300M data points",
+    use: "Activity prediction, target discovery, QSAR modeling."
+  },
+  ATILA: {
+    title: "ATILA Biosystems",
+    desc: "Developer of FDA-approved and research-grade molecular diagnostic kits. Applications include infectious disease detection, oncology biomarkers, and rapid clinical assays.",
+    size: "~100 diagnostic products",
+    use: "Clinical validation, biomarker AI models, translational research."
+  },
+  BAO: {
+    title: "BioAssay Ontology (BAO)",
+    desc: "Ontology defining relationships between assay formats, endpoints, and technologies, enabling semantic AI interpretation of bioassay data.",
+    size: "~3,000 ontology terms",
+    use: "Data harmonization, reasoning graph alignment, assay standardization."
+  },
+  CTGOV: {
+    title: "ClinicalTrials.gov",
+    desc: "Global registry of human clinical studies maintained by the NIH. Provides structured information on diagnostic and interventional trials.",
+    size: "~480K studies",
+    use: "Clinical outcome prediction, drug repurposing, safety profiling."
+  },
+  HumanProteinAtlas: {
+    title: "Human Protein Atlas",
+    desc: "Tissue-level and single-cell protein expression database mapping 26,000 proteins across normal and disease states.",
+    size: "~10M images, 26K proteins",
+    use: "Biomarker discovery, AI-assisted histopathology, diagnostics."
+  },
+  LDTs: {
+    title: "Laboratory Diagnostic Tests (LDTs)",
+    desc: "Curated data from clinical labs and partners. Includes molecular test performance metrics and patient-level validation studies.",
+    size: "~500 curated diagnostic assays",
+    use: "Precision diagnostics, AI-assisted result interpretation."
+  }
+};
+
+function openModal(id) {
+  const info = assays[id];
+  if (info) {
+    document.getElementById('modalTitle').textContent = info.title;
+    document.getElementById('modalDescription').textContent = info.desc;
+    document.getElementById('modalSize').textContent = info.size;
+    document.getElementById('modalUse').textContent = info.use;
+    document.getElementById('modal').style.display = "block";
+  }
+}
+
+function closeModal() {
+  document.getElementById('modal').style.display = "none";
+}
+
+window.onclick = function(e) {
+  const modal = document.getElementById('modal');
+  if (e.target == modal) modal.style.display = "none";
+}
+</script>
+
+</body>
+</html>
+
