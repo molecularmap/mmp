@@ -1,0 +1,256 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Super MolecularMap — Living Molecular Galaxy</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+  body {
+    margin: 0;
+    overflow: hidden;
+    background: radial-gradient(circle at 50% 50%, #0a0f2a 0%, #000010 100%);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    color: #e0e7ff;
+  }
+  header {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    color: #a5b4fc;
+    z-index: 5;
+  }
+  header h1 {
+    margin: 0;
+    font-size: 1.6rem;
+    color: #c7d2fe;
+  }
+  header p {
+    margin: 0.2rem 0 0;
+    font-size: 0.9rem;
+    color: #94a3b8;
+  }
+  #graph { width: 100vw; height: 100vh; }
+  .tooltip {
+    position: absolute;
+    background: rgba(17, 24, 39, 0.85);
+    color: #f9fafb;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    pointer-events: none;
+    opacity: 0;
+  }
+  text.label {
+    fill: #e0e7ff;
+    pointer-events: none;
+    font-size: 10px;
+    opacity: 0;
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>🌌 Super MolecularMap</h1>
+  <p>A living molecular galaxy — where molecules glow, connect, and flow like constellations.</p>
+  <a href="index.html" style="color:#818cf8;text-decoration:none;">← Back to Home</a>
+</header>
+<div id="graph"></div>
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+// ===== CONFIGURATION =====
+const width = window.innerWidth, height = window.innerHeight;
+const nodeCount = 1000, linkCount = 2400;
+
+// ===== COLOR MAP =====
+const color = d3.scaleOrdinal()
+  .domain(["disease","drug","nutrient","pathway","semantic"])
+  .range(["#f87171","#38bdf8","#facc15","#4ade80","#c084fc"]);
+
+const categories = ["disease","drug","nutrient","pathway","semantic"];
+
+// ===== DATA GENERATION =====
+const nodes = d3.range(nodeCount).map(i => ({
+  id: "Molecule-" + i,
+  category: categories[Math.floor(Math.random() * categories.length)],
+  size: Math.random() * 4 + 2
+}));
+const links = d3.range(linkCount).map(() => ({
+  source: Math.floor(Math.random() * nodeCount),
+  target: Math.floor(Math.random() * nodeCount),
+  weight: Math.random()
+}));
+
+// ===== SVG SETUP =====
+const svg = d3.select("#graph").append("svg")
+  .attr("width", width)
+  .attr("height", height)
+  .style("background", "radial-gradient(circle at 50% 50%, #0b1126 0%, #000010 100%)");
+
+const g = svg.append("g");
+const tooltip = d3.select("#tooltip");
+
+// ===== FORCES =====
+const sim = d3.forceSimulation(nodes)
+  .force("link", d3.forceLink(links).id(d=>d.index).distance(d=>60 + 120*d.weight))
+  .force("charge", d3.forceManyBody().strength(-30))
+  .force("center", d3.forceCenter(width/2, height/2))
+  .force("collision", d3.forceCollide().radius(6));
+
+// ===== DRAW LINKS =====
+const link = g.append("g")
+  .selectAll("line")
+  .data(links)
+  .enter()
+  .append("line")
+  .attr("stroke", "#334155")
+  .attr("stroke-width", d => 0.5 + d.weight)
+  .attr("stroke-opacity", 0.15);
+
+// ===== NODES =====
+const node = g.append("g")
+  .selectAll("circle")
+  .data(nodes)
+  .enter()
+  .append("circle")
+  .attr("r", d => d.size)
+  .attr("fill", d => color(d.category))
+  .attr("stroke", "#fff")
+  .attr("stroke-width", 0.3)
+  .on("mouseover", (e, d) => {
+    tooltip.transition().style("opacity", 1);
+    tooltip.html(`<strong>${d.id}</strong><br>Type: ${d.category}`)
+      .style("left", (e.pageX + 10) + "px")
+      .style("top", (e.pageY - 20) + "px");
+  })
+  .on("mouseout", () => tooltip.transition().style("opacity", 0))
+  .on("click", (e, d) => {
+    if (d.category === "disease")
+      window.open(`disease.html?q=${encodeURIComponent(d.id)}`, "_blank");
+    else
+      window.open(`molecularmap.html?q=${encodeURIComponent(d.id)}`, "_blank");
+  })
+  .call(d3.drag()
+    .on("start", dragStart)
+    .on("drag", dragged)
+    .on("end", dragEnd));
+
+// ===== LABELS =====
+const labels = g.append("g")
+  .selectAll("text")
+  .data(nodes)
+  .enter()
+  .append("text")
+  .attr("class", "label")
+  .attr("text-anchor", "middle")
+  .text(d => d.id);
+
+// ===== CLUSTER HALOS =====
+const haloLayer = g.append("g");
+const clusterGroups = d3.group(nodes, d => d.category);
+const halos = haloLayer.selectAll("circle")
+  .data(Array.from(clusterGroups.entries()))
+  .enter()
+  .append("circle")
+  .attr("fill", d => color(d[0]))
+  .attr("opacity", 0.02)
+  .attr("stroke", d => color(d[0]))
+  .attr("stroke-width", 1.5);
+
+function pulse() {
+  halos.transition()
+    .duration(4000)
+    .attr("opacity", 0.01)
+    .transition()
+    .duration(4000)
+    .attr("opacity", 0.05)
+    .on("end", pulse);
+}
+pulse();
+
+// ===== PARTICLE FLOW (ENERGY TRAVEL) =====
+const particleCount = 300;
+const particles = d3.range(particleCount).map(() => ({
+  x: Math.random() * width,
+  y: Math.random() * height,
+  vx: (Math.random() - 0.5) * 1.2,
+  vy: (Math.random() - 0.5) * 1.2,
+  life: Math.random() * 300
+}));
+
+const particleLayer = svg.append("g");
+const particleElems = particleLayer.selectAll("circle")
+  .data(particles)
+  .enter()
+  .append("circle")
+  .attr("r", 1.5)
+  .attr("fill", "#c084fc")
+  .attr("opacity", 0.6);
+
+function animateParticles() {
+  particles.forEach(p => {
+    p.x += p.vx;
+    p.y += p.vy;
+    p.life--;
+    if (p.life < 0 || p.x < 0 || p.x > width || p.y < 0 || p.y > height) {
+      p.x = Math.random() * width;
+      p.y = Math.random() * height;
+      p.vx = (Math.random() - 0.5) * 1.2;
+      p.vy = (Math.random() - 0.5) * 1.2;
+      p.life = 300 + Math.random() * 200;
+    }
+  });
+  particleElems
+    .attr("cx", d => d.x)
+    .attr("cy", d => d.y)
+    .attr("opacity", d => 0.3 + 0.3 * Math.sin(d.life / 15));
+  requestAnimationFrame(animateParticles);
+}
+animateParticles();
+
+// ===== SIMULATION TICK =====
+sim.on("tick", () => {
+  halos
+    .attr("cx", d => d3.mean(d[1], n => n.x))
+    .attr("cy", d => d3.mean(d[1], n => n.y))
+    .attr("r", d => {
+      const xs = d[1].map(n => n.x), ys = d[1].map(n => n.y);
+      const dx = d3.max(xs)-d3.min(xs), dy = d3.max(ys)-d3.min(ys);
+      return Math.sqrt(dx*dx + dy*dy)/2 + 120;
+    });
+
+  link
+    .attr("x1", d => d.source.x)
+    .attr("y1", d => d.source.y)
+    .attr("x2", d => d.target.x)
+    .attr("y2", d => d.target.y);
+
+  node
+    .attr("cx", d => d.x)
+    .attr("cy", d => d.y);
+
+  labels
+    .attr("x", d => d.x)
+    .attr("y", d => d.y - 10);
+});
+
+// ===== DRAG =====
+function dragStart(e, d){ if (!e.active) sim.alphaTarget(0.3).restart(); d.fx=d.x; d.fy=d.y; }
+function dragged(e, d){ d.fx=e.x; d.fy=e.y; }
+function dragEnd(e, d){ if (!e.active) sim.alphaTarget(0); d.fx=null; d.fy=null; }
+
+// ===== ZOOM =====
+const zoom = d3.zoom()
+  .scaleExtent([0.2, 6])
+  .on("zoom", e => {
+    g.attr("transform", e.transform);
+    const scale = e.transform.k;
+    labels.attr("opacity", scale > 2 ? 1 : 0); // Fade in labels when zoomed in
+  });
+
+svg.call(zoom);
+</script>
+</body>
+</html>
+

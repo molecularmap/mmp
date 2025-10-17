@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>MolecularMap — The ImageNet of Molecules</title>
+  <meta name="description" content="The AI-ready atlas of molecules, pathways, and life. Curated datasets for research, health, and drug discovery.">
+
+  <!-- SEO / Social -->
+  <meta property="og:title" content="MolecularMap — The ImageNet of Molecules">
+  <meta property="og:description" content="Mapping every molecule and its connections into an AI-ready dataset for health and discovery.">
+  <meta property="og:image" content="/static/molecularmap-preview.png">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <style>
+/* Navigation Bar */
+/* Navigation Bar */
+.navbar {
+  background: #001f3f; /* Deep blue background */
+  border-bottom: 1px solid #003366; /* Darker blue border */
+  padding: 0.8rem 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+.nav-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.logo {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: white; /* White text */
+  text-decoration: none;
+}
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 1.5rem;
+  margin: 0;
+  padding: 0;
+}
+.nav-links a {
+  text-decoration: none;
+  color: white; /* White text */
+  font-weight: 500;
+}
+.nav-links a:hover {
+  color: #a0c8ff; /* Light blue on hover for better visibility */
+}
+@media (max-width: 700px) {
+  .nav-links {
+    display: none; /* simple for now, could add mobile menu later */
+  }
+}
+    :root {
+      --primary: #0f766e; /* Teal - science */
+      --dark: #083344;
+      --light-bg: #f0fdfa;
+    }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      margin: 0;
+      background: white;
+      color: #1e293b;
+    }
+    .hero {
+      background: linear-gradient(135deg, #0f766e 0%, #083344 100%);
+      color: white;
+      padding: 4rem 2rem;
+      text-align: center;
+    }
+    .hero h1 {
+      font-size: 2.8rem;
+      max-width: 900px;
+      margin: 0 auto 1rem;
+    }
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin: 2rem 0;
+      flex-wrap: wrap;
+    }
+    .stat-box {
+      background: rgba(255,255,255,0.1);
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+    }
+    .search-box {
+      max-width: 600px;
+      margin: 2rem auto;
+      display: flex;
+      gap: 0.5rem;
+    }
+    .search-box input {
+      flex: 1;
+      padding: 0.8rem;
+      border: none;
+      border-radius: 4px 0 0 4px;
+    }
+    .search-box button {
+      background: white;
+      color: var(--primary);
+      border: none;
+      padding: 0 1.5rem;
+      border-radius: 0 4px 4px 0;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .features {
+      max-width: 1000px;
+      margin: 3rem auto;
+      padding: 0 1.5rem;
+    }
+    .feature {
+      display: flex;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+      align-items: flex-start;
+    }
+    .feature-icon {
+      background: var(--light-bg);
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 1.5rem;
+    }
+    #graph {
+      width: 100%;
+      height: 400px;
+      margin: 2rem auto;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+    }
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: #64748b;
+      border-top: 1px solid #e2e8f0;
+    }
+    footer a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+    @media (max-width: 600px) {
+      .hero h1 { font-size: 2rem; }
+      .search-box { flex-direction: column; }
+      .search-box input, .search-box button {
+        border-radius: 4px;
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<nav class="navbar">
+  <div class="nav-container">
+    <ul class="nav-links">
+      <li><a href="/index.html">Home</a></li>
+      <li><a href="/search.php">Search</a></li>
+      <li><a href="/about.html">About</a></li>
+      <li><a href="/datasets.html">Datasets</a></li>
+      <li><a href="/contribute.html">Contribute</a></li>
+      <li><a href="/api.html">Developers/API</a></li>
+      <li><a href="/license.html">License</a></li>
+      <li><a href="/privacy.html">Privacy</a></li>
+      <li><a href="mailto:contact@molecularmap.com">Contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+  <!-- Hero -->
+
+<div class="hero">
+  <h2>🌌 MolecularMap: The ImageNet of Molecules</h2>
+  <p style="max-width: 700px; margin: 0 auto 1.5rem; opacity: 0.9; font-size:1.1rem;">
+    MolecularMap transforms raw global chemistry and biology data 
+    into a <strong>curated, AI-ready dataset</strong> for drug discovery, health prediction, and molecular AI.
+  </p>
+  
+  <div class="stats">
+    <div class="stat-box">
+      <div style="font-size: 1.8rem; font-weight: bold;">100M+</div>
+      <div>Molecules (target dataset scale)</div>
+    </div>
+    <div class="stat-box">
+      <div style="font-size: 1.8rem; font-weight: bold;">1B+</div>
+      <div>Relationships (expanding as we integrate data)</div>
+    </div>
+    <div class="stat-box">
+      <div style="font-size: 1.8rem; font-weight: bold;">AI-Ready</div>
+      <div>Curated for Machine Learning</div>
+    </div>
+  </div>
+
+<script>
+const input = document.getElementById("search-input");
+const suggestionsBox = document.getElementById("suggestions");
+let currentIndex = -1;
+
+// Cache helpers
+function getCache(key) {
+  const item = localStorage.getItem(key);
+  if (!item) return null;
+  const parsed = JSON.parse(item);
+  if (Date.now() - parsed.timestamp > 24 * 60 * 60 * 1000) { // expire after 24h
+    localStorage.removeItem(key);
+    return null;
+  }
+  return parsed.data;
+}
+
+function setCache(key, data) {
+  const entry = { timestamp: Date.now(), data };
+  localStorage.setItem(key, JSON.stringify(entry));
+  // limit cache size to 50 keys
+  if (Object.keys(localStorage).length > 50) {
+    const oldestKey = Object.keys(localStorage)
+      .map(k => ({ k, t: JSON.parse(localStorage.getItem(k)).timestamp }))
+      .sort((a, b) => a.t - b.t)[0].k;
+    localStorage.removeItem(oldestKey);
+  }
+}
+
+input.addEventListener("input", async () => {
+  const query = input.value.trim();
+  currentIndex = -1;
+  if (query.length < 2) {
+    suggestionsBox.style.display = "none";
+    return;
+  }
+
+  const cacheKey = `autocomplete_${query.toLowerCase()}`;
+  const cached = getCache(cacheKey);
+  if (cached) {
+    renderSuggestions(cached.molecules, cached.diseases);
+    return;
+  }
+
+  try {
+    // Fetch molecules (PubChem)
+    const pubchemUrl = `https://pubchem.ncbi.nlm.nih.gov/rest/autocomplete/compound/${encodeURIComponent(query)}/json?limit=5`;
+    const pubchemResp = await fetch(pubchemUrl);
+    const pubchemData = await pubchemResp.json();
+
+    // Fetch diseases (MeSH)
+    const meshUrl = `https://id.nlm.nih.gov/mesh/sparql?query=PREFIX%20rdfs:%20<http://www.w3.org/2000/01/rdf-schema#>%20SELECT%20?label%20WHERE%20{?d%20rdfs:label%20?label.%20FILTER(CONTAINS(LCASE(?label),%20"${query.toLowerCase()}"))}%20LIMIT%205&format=JSON`;
+    const meshResp = await fetch(meshUrl);
+    const meshData = await meshResp.json();
+
+    const molecules = pubchemData.dictionary_terms?.compound || [];
+    const diseases = meshData.results?.bindings.map(b => b.label.value) || [];
+
+    renderSuggestions(molecules, diseases);
+    setCache(cacheKey, { molecules, diseases });
+
+  } catch (err) {
+    console.error("Autocomplete error:", err);
+    suggestionsBox.style.display = "none";
+  }
+});
+
+// Render grouped suggestions
+function renderSuggestions(molecules, diseases) {
+  suggestionsBox.innerHTML = "";
+  let hasResults = false;
+
+  if (molecules.length) {
+    const header = document.createElement("li");
+    header.textContent = "🧪 Molecules";
+    header.style.fontWeight = "bold";
+    header.style.background = "#f1f5f9";
+    header.style.padding = "0.5rem";
+    suggestionsBox.appendChild(header);
+
+    molecules.forEach(term => {
+      const li = document.createElement("li");
+      li.textContent = term;
+      li.style.padding = "0.5rem";
+      li.style.cursor = "pointer";
+      li.addEventListener("click", () => {
+        input.value = term;
+        suggestionsBox.style.display = "none";
+      });
+      suggestionsBox.appendChild(li);
+    });
+    hasResults = true;
+  }
+
+  if (diseases.length) {
+    const header = document.createElement("li");
+    header.textContent = "🧬 Diseases";
+    header.style.fontWeight = "bold";
+    header.style.background = "#f1f5f9";
+    header.style.padding = "0.5rem";
+    suggestionsBox.appendChild(header);
+
+    diseases.forEach(term => {
+      const li = document.createElement("li");
+      li.textContent = term;
+      li.style.padding = "0.5rem";
+      li.style.cursor = "pointer";
+      li.addEventListener("click", () => {
+        input.value = term;
+        suggestionsBox.style.display = "none";
+      });
+      suggestionsBox.appendChild(li);
+    });
+    hasResults = true;
+  }
+
+  suggestionsBox.style.display = hasResults ? "block" : "none";
+}
+
+// Keyboard navigation
+input.addEventListener("keydown", (e) => {
+  const items = suggestionsBox.querySelectorAll("li:not([style*='bold'])");
+  if (!items.length) return;
+
+  if (e.key === "ArrowDown") {
+    e.preventDefault();
+    currentIndex = (currentIndex + 1) % items.length;
+    updateSelection(items);
+  } else if (e.key === "ArrowUp") {
+    e.preventDefault();
+    currentIndex = (currentIndex - 1 + items.length) % items.length;
+    updateSelection(items);
+  } else if (e.key === "Enter" && currentIndex >= 0) {
+    e.preventDefault();
+    input.value = items[currentIndex].textContent;
+    suggestionsBox.style.display = "none";
+    input.form.submit();
+  }
+});
+
+function updateSelection(items) {
+  items.forEach((item, idx) => {
+    item.style.background = (idx === currentIndex) ? "#e0f2fe" : "white";
+  });
+}
+
+// Hide suggestions on outside click
+document.addEventListener("click", (e) => {
+  if (!suggestionsBox.contains(e.target) && e.target !== input) {
+    suggestionsBox.style.display = "none";
+  }
+});
+</script>
+
+</div>
+
+  <!-- Features -->
+  <div class="features">
+    <div class="feature">
+      <div class="feature-icon">🧬</div>
+      <div>
+        <a href="./topics/disease.html" /><h3>Disease-Centered Search</h3> </a>
+<div style="text-align:center; margin-top:1rem;">
+  <a href="./topics/disease.html"
+     style="display:inline-block;
+            background:#dc2626;
+            color:white;
+            padding:0.6rem 1.2rem;
+            border-radius:8px;
+            text-decoration:none;
+            font-weight:500;
+            transition:background 0.2s;">
+     💊 Explore Disease Networks
+  </a>
+</div>
+
+        <p>Explore molecules through the lens of health and medicine — from Alzheimer’s biomarkers to diabetes drugs — 
+         connecting pathways, compounds, and therapeutic opportunities.</p>
+      </div>
+   </div>
+
+
+<div class="feature">
+<div class="feature-icon">🌿</div>
+<div>
+<a href="./topics/nutrition.html" /><h3>Nutrition-Centered Search</h3></a>
+<div style="text-align:center; margin-top:1rem;">
+  <a href="./topics/nutrition.html"
+     style="display:inline-block;
+            background:#eab308;
+            color:white;
+            padding:0.6rem 1.2rem;
+            border-radius:8px;
+            text-decoration:none;
+            font-weight:500;
+            transition:background 0.2s;">
+      Explore Nutrition Molecules
+  </a>
+</div>
+
+  <p>Uncover how nutrients, vitamins, and natural compounds shape metabolism, cellular pathways, and overall wellness.
+  From plant-derived flavonoids to essential amino acids, MolecularMap connects dietary molecules to their biological targets, 
+  revealing how what we eat translates into the molecular language of life.
+  Explore the nutrition–metabolism interface through curated data from FoodDB, HMDB, and KEGG Nutrient Pathways.</p>
+</div>
+</div>
+
+
+<div class="feature"><div class="feature-icon">🍎</div>
+    <div>
+<a href="./topics/preventive.html"> <h3>Preventive Health-Centered Search</h3> </a>
+<div style="text-align:center; margin-top:1rem;">
+  <a href="./topics/preventive.html"
+     style="display:inline-block;
+            background:#15803d;
+            color:white;
+            padding:0.6rem 1.2rem;
+            border-radius:8px;
+            text-decoration:none;
+            font-weight:500;
+            transition:background 0.2s;">
+      Explore Preventive Health Molecules ->
+  </a>
+</div>
+
+    <p>Discover molecules that support resilience and longevity — tracing how lifestyle, supplements, and molecular modulators protect against disease onset. Map antioxidants, metabolic regulators, and anti-aging compounds to biological networks that sustain long-term health.</p>
+
+</div>
+</div>
+
+
+<div class="feature"><div class="feature-icon">🧪</div>
+<div>
+<a href="./topics/bioassay.html "/><h3>Bioassay & Diagnostics-Centered Search</h3> </a>
+<div style="text-align:center; margin-top:1rem;">
+  <a href="/topics/bioassay.html"
+     style="display:inline-block; background:#0f766e; color:white;
+            padding:0.6rem 1.2rem; border-radius:8px;
+            text-decoration:none; font-weight:500;
+            transition:background 0.2s;">
+     Explore Bioassays & Diagnostics ->
+  </a>
+</div>
+
+<p>Explore molecules through the lens of experimental validation and clinical measurement — from high-throughput screening assays to diagnostic biomarkers.
+MolecularMap integrates bioassay data, clinical diagnostics, and multi-omics readouts, linking molecular signatures to therapeutic efficacy and real-world health outcomes.
+By connecting bench-level assays with bedside data, this module enables AI to learn directly from validated biological evidence — bridging discovery, diagnostics, and deployment.</p>
+
+
+</div></div>
+
+
+
+<div class="feature"><div class="feature-icon">🧹</div>
+  <div>
+    <a href="/topics/datasets.html"/> <h3> Curated for Machine Learning</h3></a>
+  <div style="text-align:center; margin-top:1rem;">
+    <a href="/topics/datasets.html"
+       style="display:inline-block; background:#0f766e; color:white;
+              padding:0.6rem 1.2rem; border-radius:8px;
+              text-decoration:none; font-weight:500;
+              transition:background 0.2s;">
+       View Sample Datasets ->
+    </a>
+      </div>
+  <p>
+    MolecularMap continuously scans and aggregates raw molecular data from public and proprietary sources,
+    standardizing and cleaning it into AI-ready formats — including JSON, RDF, and graph representations.
+    Each dataset is optimized for modern machine learning pipelines, enabling reproducible, multimodal training
+    across chemistry, biology, and medicine.
+  </p>
+    </div>
+</div>
+
+<div class="feature"><div class="feature-icon">🔗</div>
+  <div>
+  <a href="/topics/relationships4.html"/><h3>Multimodal Molecular Relationships</h3></a>
+<div style="text-align:center; margin-top:1rem;">
+  <a href="/topics/relationships.html" 
+     style="display:inline-block; background:#0f766e; color:white; 
+            padding:0.6rem 1.2rem; border-radius:8px; 
+            text-decoration:none; font-weight:500; 
+            transition:background 0.2s;">
+     Explore Relationships ->
+  </a>
+</div>
+
+    <p>MolecularMap unifies chemical reactions, biological pathways, and semantic ontologies into a single reasoning graph.
+       Solid edges represent chemical reactions, dashed lines show biological pathways, and dotted links encode semantic relationships across molecular, cellular, and clinical data.
+       This multimodal structure enables AI models — and human researchers — to traverse chemistry, biology, and medicine seamlessly.</p>
+  </div>
+</div>
+
+
+<div class="feature">
+  <div class="feature-icon">🔊</div>
+    <div>
+<a href="/topics/audio.html"><h3>Sonified Molecules</h3></a>
+<div style="text-align:center; margin-top:1rem;">
+<a href="/topics/audio.html" 
+   style="display:inline-block;margin-top:1rem;background:var(--primary);
+          color:white;padding:0.6rem 1.2rem;border-radius:6px;
+          text-decoration:none;">
+   Explore Molecular Audio Maps →
+</a>
+</div>
+
+<p>
+Every molecule carries a unique audio fingerprint through our patent-protected sonification framework, optimized for AI learning.
+These audio-based molecular representations train faster, demand less GPU computation, and enhance multimodal model accuracy.
+From drug discovery to next-generation batteries and advanced biomaterials, MolecularMap enables AI to learn directly from the universal language of molecules — through sound.
+</p>
+    </div>
+</div>
+
+<div class="feature">
+  <div class="feature-icon">🤖</div>
+  <div>
+  <a href="./topics/mmap.html"><h3>The ImageNet of Molecules</h3></a>
+<div style="text-align:center; margin-top:1rem;">
+<a href="./topics/imagenet.html" 
+   style="display:inline-block;margin-top:1rem;background:var(--primary);
+          color:white;padding:0.6rem 1.2rem;border-radius:6px;
+          text-decoration:none;">
+   Explore Molecular Maps →
+</a>
+</a>
+
+    <p>MolecularMap isn’t just a knowledge graph — it’s a living atlas of molecular intelligence.
+    Our platform curates and visualizes millions of molecular connections — from drug mechanisms and metabolic pathways to battery materials, catalysts, and climate-relevant reactions.
+    Explore this universe interactively through AI-powered search and dynamic molecular maps.</p>
+  </div>
+</div>
+
+
+  </div>
+
+  <!-- Graph Demo -->
+  <div id="graph"></div>
+
+  <!-- Call to Action -->
+  <div style="text-align: center; padding: 3rem 1.5rem; background: var(--light-bg);">
+    <h2 style="margin-bottom: 1rem;">Ready to Build AI on the Molecular Universe?</h2>
+    <p style="max-width: 650px; margin: 0 auto 1.5rem; font-size:1.05rem;">
+      MolecularMap provides <strong>curated, AI-ready molecular datasets</strong> for health, drug discovery, and machine learning.  
+      Access is <strong>free for academic and non-profit research</strong>, with <strong>commercial licensing available</strong> 
+      for companies and industry partners.
+    </p>
+    <div>
+      <a href="./404.html" 
+         style="background: var(--primary); color: white; text-decoration: none; padding: 0.6rem 1.5rem; border-radius: 6px; margin: 0 0.5rem;">
+         Download Academic Dataset
+      </a>
+      <a href="mailto:licensing@molecularmap.com" 
+         style="background: transparent; border: 2px solid var(--primary); color: var(--primary); text-decoration: none; padding: 0.6rem 1.5rem; border-radius: 6px; margin: 0 0.5rem;">
+         Request Commercial License
+      </a>
+    </div>
+  </div>
+
+  <!-- Footer -->
+
+<footer>
+  <p>MolecularMap — The ImageNet of Molecules | © 2014 - 2025</p>
+  <p>
+    A project by <a href="https://soundofmolecules.com">Sound of Molecules</a>.  
+    Graph data available under custom license (<strong>free for academia</strong>, commercial terms available).
+  </p>
+  <p>
+    <a href="/privacy.html">Privacy Policy</a> · 
+    <a href="/license.html">Dataset License</a> · 
+    <a href="https://github.com/molecularmap">GitHub</a>
+  </p>
+</footer>
+
+  <!-- Cytoscape.js Graph Demo -->
+  <script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
+  <script>
+    // Search redirect
+    document.querySelector('.search-box button').addEventListener('click', () => {
+      const query = document.querySelector('.search-box input').value.trim();
+      if (query) {
+        window.location.href = '/search.php?q=' + encodeURIComponent(query);
+      }
+    });
+
+    // Graph demo
+    const cy = cytoscape({
+      container: document.getElementById('graph'),
+      elements: [
+        { data: { id: 'glucose', label: 'Glucose' } },
+        { data: { id: 'atp', label: 'ATP' } },
+        { data: { id: 'caffeine', label: 'Caffeine' } },
+        { data: { source: 'glucose', target: 'atp' } },
+        { data: { source: 'atp', target: 'caffeine' } }
+      ],
+      style: [
+        { selector: 'node', style: { 'label': 'data(label)', 'background-color': '#0f766e', 'color': '#fff', 'text-valign': 'center', 'text-halign': 'center' }},
+        { selector: 'edge', style: { 'line-color': '#ccc', 'width': 2 }}
+      ],
+      layout: { name: 'circle' }
+    });
+  </script>
+</body>
+</html>
+

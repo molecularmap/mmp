@@ -1,0 +1,255 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MolecularMap — The AI Galaxy of Molecules</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+  html, body {
+    margin: 0; padding: 0;
+    width: 100%; height: 100%;
+    overflow-x: hidden;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    color: #e0e7ff;
+    background: #000010;
+  }
+
+  /* === BACKGROUND CANVAS === */
+  #galaxy-bg {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    z-index: 0;
+    cursor: crosshair;
+  }
+
+  /* === MAIN CONTENT === */
+  main {
+    position: relative;
+    z-index: 2;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+    background: rgba(10,15,35,0.75);
+    backdrop-filter: blur(12px);
+    border-radius: 12px;
+    box-shadow: 0 0 40px rgba(0,0,0,0.6);
+  }
+
+  h1, h2 { color: #c7d2fe; }
+  p { color: #cbd5e1; line-height: 1.6; }
+  section { margin-bottom: 3rem; }
+
+  a.btn {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-weight: 500;
+    text-decoration: none;
+    color: white;
+    transition: background 0.2s, transform 0.2s;
+  }
+  a.btn:hover { opacity: 0.9; transform: scale(1.03); }
+
+  .disease { background: #dc2626; }
+  .bioassay { background: #0891b2; }
+  .nutrition { background: #16a34a; }
+  .preventive { background: #15803d; }
+  .sonified { background: #7e22ce; }
+  .imagenet { background: #1d4ed8; }
+  .galaxy { background: #4f46e5; }
+
+  footer {
+    text-align: center;
+    padding: 2rem;
+    font-size: 0.9rem;
+    color: #94a3b8;
+  }
+
+  /* === FULLSCREEN OVERLAY === */
+  #fullscreenGalaxy {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    background: radial-gradient(circle at 50% 50%, #0b1126 0%, #000010 100%);
+  }
+  #closeGalaxy {
+    position: absolute;
+    top: 1rem; right: 1rem;
+    color: #e0e7ff;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid #64748b;
+    border-radius: 6px;
+    padding: 0.4rem 0.8rem;
+    cursor: pointer;
+  }
+  #closeGalaxy:hover { background: rgba(255,255,255,0.1); }
+</style>
+</head>
+<body>
+
+<!-- 🌌 Galaxy Background -->
+<svg id="galaxy-bg"></svg>
+
+<!-- 🧬 Main Content -->
+<main>
+  <h1>🌌 MolecularMap</h1>
+  <p>The world’s first multimodal AI platform unifying chemistry, biology, medicine, and materials — visualized as a living molecular galaxy.</p>
+
+  <section>
+    <h2>Disease-Centered Search</h2>
+    <p>Explore molecules through the lens of health and medicine — from Alzheimer’s biomarkers to diabetes drugs — connecting pathways, compounds, and therapeutic opportunities.</p>
+    <a href="disease.html" class="btn disease">💊 Explore Disease Networks</a>
+  </section>
+
+  <section>
+    <h2>Bioassay & Diagnostics-Centered Search</h2>
+    <p>Explore molecules through experimental validation and clinical measurement — from high-throughput screening assays to diagnostic biomarkers.</p>
+    <a href="bioassay.php" class="btn bioassay">🧫 Explore Bioassays</a>
+  </section>
+
+  <section>
+    <h2>Nutrition-Centered Search</h2>
+    <p>Uncover how nutrients, vitamins, and natural compounds influence metabolism, cellular pathways, and overall wellness.</p>
+    <a href="nutrition.html" class="btn nutrition">🥗 Explore Nutrition Molecules</a>
+  </section>
+
+  <section>
+    <h2>Preventive Health-Centered Search</h2>
+    <p>Discover molecules that support resilience and longevity — tracing how lifestyle, supplements, and molecular modulators protect against disease onset.</p>
+    <a href="preventive.html" class="btn preventive">🌿 Explore Preventive Health Molecules</a>
+  </section>
+
+  <section>
+    <h2>Sonified Molecules</h2>
+    <p>Every molecule carries a unique audio fingerprint through our patent-protected sonification framework, optimized for AI learning.</p>
+    <a href="moaudionet.com" class="btn sonified">🎵 Explore Sonified Molecules</a>
+  </section>
+
+  <section>
+    <h2>The ImageNet of Molecules</h2>
+    <p>MolecularMap isn’t just a knowledge graph — it’s the foundational dataset for molecular AI, built to fuel drug discovery, health prediction, and scientific breakthroughs at global scale.</p>
+    <a href="imagenet.html" class="btn imagenet">🧠 Explore the Molecular ImageNet</a>
+  </section>
+
+  <section style="text-align:center;">
+    <a href="#" id="openGalaxy" class="btn galaxy">🔭 Explore Full Galaxy View</a>
+  </section>
+</main>
+
+<footer>MolecularMap © 2014–2025 — The AI Galaxy of Molecules</footer>
+
+<!-- Fullscreen Galaxy Overlay -->
+<div id="fullscreenGalaxy">
+  <button id="closeGalaxy">✖ Close</button>
+  <svg id="fullscreenSVG" width="100%" height="100%"></svg>
+</div>
+
+<script>
+const width = window.innerWidth, height = window.innerHeight;
+const svg = d3.select("#galaxy-bg").attr("width", width).attr("height", height);
+const g = svg.append("g");
+
+// Nodes
+const nodes = d3.range(600).map(() => ({
+  x: Math.random()*width, y: Math.random()*height,
+  vx:(Math.random()-0.5)*0.3, vy:(Math.random()-0.5)*0.3,
+  r:Math.random()*2.5+0.5,
+  color:["#38bdf8","#a855f7","#facc15","#22d3ee","#4ade80"][Math.floor(Math.random()*5)]
+}));
+const links = d3.range(1000).map(() => ({
+  source: nodes[Math.floor(Math.random()*nodes.length)],
+  target: nodes[Math.floor(Math.random()*nodes.length)]
+}));
+
+const link = g.selectAll("line").data(links).enter()
+  .append("line").attr("stroke","#334155").attr("stroke-opacity",0.15).attr("stroke-width",0.5);
+const node = g.selectAll("circle").data(nodes).enter()
+  .append("circle").attr("r",d=>d.r).attr("fill",d=>d.color).attr("opacity",0.8);
+
+// Parallax motion
+let mouseX=width/2, mouseY=height/2;
+window.addEventListener("mousemove", e=>{
+  mouseX=e.clientX; mouseY=e.clientY;
+});
+
+d3.timer(()=>{
+  const parallaxX=(mouseX-width/2)*0.0004, parallaxY=(mouseY-height/2)*0.0004;
+  nodes.forEach(n=>{
+    n.x+=n.vx+parallaxX;
+    n.y+=n.vy+parallaxY;
+    if(n.x<0||n.x>width) n.vx*=-1;
+    if(n.y<0||n.y>height) n.vy*=-1;
+  });
+  link.attr("x1",d=>d.source.x).attr("y1",d=>d.source.y)
+       .attr("x2",d=>d.target.x).attr("y2",d=>d.target.y);
+  node.attr("cx",d=>d.x).attr("cy",d=>d.y)
+      .attr("opacity",d=>0.5+0.5*Math.sin(Date.now()/5000+d.x));
+});
+
+// Hover sparkle trails
+svg.on("mousemove", function(e){
+  const [x,y]=d3.pointer(e);
+  node.each(function(d){
+    const dx=d.x-x, dy=d.y-y;
+    const dist=Math.sqrt(dx*dx+dy*dy);
+    if(dist<50){
+      d3.select(this)
+        .transition().duration(100)
+        .attr("r",d.r*2)
+        .attr("opacity",1)
+        .transition().duration(400)
+        .attr("r",d.r)
+        .attr("opacity",0.8);
+    }
+  });
+});
+
+// === Fullscreen Galaxy Mode ===
+document.getElementById("openGalaxy").onclick=function(){
+  const overlay=document.getElementById("fullscreenGalaxy");
+  overlay.style.display="block";
+  drawFullscreenGalaxy();
+};
+document.getElementById("closeGalaxy").onclick=function(){
+  document.getElementById("fullscreenGalaxy").style.display="none";
+};
+
+function drawFullscreenGalaxy(){
+  const svgFS=d3.select("#fullscreenSVG");
+  const w=window.innerWidth, h=window.innerHeight;
+  svgFS.selectAll("*").remove();
+  const gFS=svgFS.append("g");
+  const nodesFS=d3.range(1200).map(i=>({
+    id:"Molecule-"+i,
+    x:Math.random()*w, y:Math.random()*h,
+    r:Math.random()*3+0.5,
+    color:["#60a5fa","#c084fc","#fbbf24","#34d399","#22d3ee"][Math.floor(Math.random()*5)]
+  }));
+  const linksFS=d3.range(2200).map(()=>({
+    source:nodesFS[Math.floor(Math.random()*nodesFS.length)],
+    target:nodesFS[Math.floor(Math.random()*nodesFS.length)]
+  }));
+  const linkFS=gFS.selectAll("line").data(linksFS).enter()
+    .append("line").attr("stroke","#475569").attr("stroke-opacity",0.2).attr("stroke-width",0.5);
+  const nodeFS=gFS.selectAll("circle").data(nodesFS).enter()
+    .append("circle").attr("r",d=>d.r).attr("fill",d=>d.color).attr("opacity",0.9);
+
+  const zoom=d3.zoom().scaleExtent([0.2,6]).on("zoom",e=>gFS.attr("transform",e.transform));
+  svgFS.call(zoom);
+
+  d3.timer(()=>{
+    linkFS.attr("x1",d=>d.source.x).attr("y1",d=>d.source.y)
+           .attr("x2",d=>d.target.x).attr("y2",d=>d.target.y);
+    nodeFS.attr("cx",d=>d.x).attr("cy",d=>d.y)
+           .attr("opacity",d=>0.5+0.5*Math.sin(Date.now()/4000+d.x));
+  });
+}
+</script>
+</body>
+</html>
+
