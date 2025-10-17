@@ -70,12 +70,6 @@ $graph_edges = [];
   <form method="GET" action="search.php">
     <input type="text" name="q" value="<?= htmlspecialchars($query) ?>" placeholder="Enter molecule, SMILES, or disease..." required>
     <button type="submit">Search</button>
-
-<!-- Add this near your search box in your original search.php -->
-<a href="search_advanced.php" style="background: linear-gradient(135deg, #8b5cf6, #6366f1); color: white; padding: 0.8rem 2rem; border-radius: 8px; text-decoration: none; display: inline-block; margin-left: 1rem;">
-Advanced AI Search
-</a>
-
   </form>
 
   <?php if ($query): ?>
