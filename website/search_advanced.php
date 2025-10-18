@@ -1,561 +1,251 @@
 <?php
-/**
- * MolecularMap Advanced AI Search
- * Filename: search_advanced.php
- * 
- * Intelligent search system with specialized AI agents
- */
+// -------------------------------------------------------------------
+// search_advanced.php  (conservative UI; complete file)
+// - Keeps existing header/footer if header.php / footer.php are present
+// - Removes AI-agent cards
+// - Adds one dropdown (defaults to Auto) and shows results below the box
+// -------------------------------------------------------------------
 
-$query = isset($_GET['q']) ? trim($_GET['q']) : '';
-$agent = isset($_GET['agent']) ? $_GET['agent'] : 'molecule';
+/** Basic escaping */
+function h($s) { return htmlspecialchars($s ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); }
 
-// AI Agent Configurations
-$ai_agents = [
-    'molecule' => [
-        'name' => 'Molecule Explorer',
-        'icon' => '🔬',
-        'description' => 'Deep molecular analysis with structure, properties, and interactions',
-        'color' => '#818cf8'
-    ],
-    'drug' => [
-        'name' => 'Drug Discovery Agent',
-        'icon' => '💊',
-        'description' => 'Find similar drugs, clinical trials, and therapeutic applications',
-        'color' => '#f87171'
-    ],
-    'disease' => [
-        'name' => 'Disease Pathway Finder',
-        'icon' => '🧬',
-        'description' => 'Map disease mechanisms, biomarkers, and molecular pathways',
-        'color' => '#4ade80'
-    ],
-    'patent' => [
-        'name' => 'Innovation Finder',
-        'icon' => '💡',
-        'description' => 'Search patents, publications, and research breakthroughs',
-        'color' => '#fbbf24'
-    ],
-    'target' => [
-        'name' => 'Target Predictor',
-        'icon' => '🎯',
-        'description' => 'Predict protein targets and binding affinity',
-        'color' => '#a78bfa'
-    ],
-    'natural' => [
-        'name' => 'Natural Compound Hunter',
-        'icon' => '🌿',
-        'description' => 'Find natural alternatives and plant-derived molecules',
-        'color' => '#10b981'
-    ]
+/** Small JSON fetcher with short timeouts */
+function fetch_json($url, $timeout = 3.0) {
+  $ch = curl_init();
+  curl_setopt_array($ch, [
+    CURLOPT_URL => $url,
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_FOLLOWLOCATION => true,
+    CURLOPT_TIMEOUT => $timeout,
+    CURLOPT_CONNECTTIMEOUT => $timeout,
+    CURLOPT_HTTPHEADER => ['Accept: application/json'],
+    CURLOPT_USERAGENT => 'MolecularMap/advanced-search'
+  ]);
+  $raw  = curl_exec($ch);
+  $err  = curl_error($ch);
+  $code = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+  curl_close($ch);
+  if ($err || $code >= 400 || !$raw) return null;
+  $j = json_decode($raw, true);
+  return is_array($j) ? $j : null;
+}
+
+/** Source handlers */
+$SOURCES = [];
+
+/* PubChem: compound name -> CIDs */
+$SOURCES['pubchem'] = [
+  'label' => 'PubChem (Compounds)',
+  'handler' => function($q, $limit = 5) {
+    $url = 'https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/' . rawurlencode($q) . '/cids/JSON';
+    $j = fetch_json($url);
+    $out = [];
+    if (!empty($j['IdentifierList']['CID'])) {
+      foreach (array_slice($j['IdentifierList']['CID'], 0, $limit) as $cid) {
+        $out[] = [
+          'title' => "CID $cid",
+          'url'   => "https://pubchem.ncbi.nlm.nih.gov/compound/$cid",
+          'meta'  => 'Compound • PubChem'
+        ];
+      }
+    }
+    if (!$out) {
+      $out[] = [
+        'title' => 'Search on PubChem',
+        'url'   => 'https://pubchem.ncbi.nlm.nih.gov/#query=' . rawurlencode($q),
+        'meta'  => 'No exact API hit • Fallback link'
+      ];
+    }
+    return $out;
+  }
 ];
 
-// Smart Query Analyzer
-function analyze_query($query) {
-    $query_lower = strtolower($query);
-    
-    // Detect query type
-    $types = [];
-    
-    // Check for SMILES pattern
-    if (preg_match('/^[A-Z0-9\(\)\[\]=#@\+\-\\\\\/]+$/i', $query) && strlen($query) > 5) {
-        $types[] = 'smiles';
-    }
-    
-    // Check for InChI
-    if (strpos($query, 'InChI=') === 0) {
-        $types[] = 'inchi';
-    }
-    
-    // Check for disease keywords
-    $disease_keywords = ['cancer', 'diabetes', 'alzheimer', 'parkinson', 'disease', 'syndrome', 'disorder'];
-    foreach ($disease_keywords as $kw) {
-        if (strpos($query_lower, $kw) !== false) {
-            $types[] = 'disease';
-            break;
-        }
-    }
-    
-    // Check for drug keywords
-    $drug_keywords = ['drug', 'medication', 'treatment', 'therapy', 'pharmaceutical'];
-    foreach ($drug_keywords as $kw) {
-        if (strpos($query_lower, $kw) !== false) {
-            $types[] = 'drug';
-            break;
-        }
-    }
-    
-    // Check for gene/protein
-    if (preg_match('/^[A-Z0-9]{2,10}$/', $query) || strpos($query_lower, 'protein') !== false) {
-        $types[] = 'protein';
-    }
-    
-    // Default to molecule
-    if (empty($types)) {
-        $types[] = 'molecule';
-    }
-    
-    return $types;
-}
-
-// Enhanced API fetchers with error handling
-function fetch_pubchem_enhanced($query) {
-    $endpoints = [
-        'compound/name/' . urlencode($query),
-        'compound/cid/' . urlencode($query),
-    ];
-    
-    foreach ($endpoints as $endpoint) {
-        $url = "https://pubchem.ncbi.nlm.nih.gov/rest/pug/{$endpoint}/property/MolecularFormula,MolecularWeight,InChIKey,IUPACName,CanonicalSMILES/JSON";
-        $resp = @file_get_contents($url);
-        if ($resp) {
-            return json_decode($resp, true);
-        }
-    }
-    return null;
-}
-
-function fetch_chembl_enhanced($query) {
-    $url = "https://www.ebi.ac.uk/chembl/api/data/molecule/search.json?q=" . urlencode($query) . "&limit=5";
-    $resp = @file_get_contents($url);
-    return $resp ? json_decode($resp, true) : null;
-}
-
-function fetch_drugbank_similar($query) {
-    // Note: DrugBank requires API key for full access
-    // This is a placeholder - implement with your API key
-    return [
-        'similar_drugs' => [],
-        'message' => 'DrugBank integration available with API key'
-    ];
-}
-
-function fetch_patents($query) {
-    // USPTO or Google Patents API
-    // Placeholder implementation
-    $url = "https://api.patentsview.org/patents/query?q={\"_text_any\":{\"patent_abstract\":\"" . urlencode($query) . "\"}}&f=[\"patent_number\",\"patent_title\",\"patent_date\"]";
-    $resp = @file_get_contents($url);
-    return $resp ? json_decode($resp, true) : null;
-}
-
-?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MolecularMap - Advanced AI Search</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    
-    body {
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-      color: #e2e8f0;
-      min-height: 100vh;
-    }
-
-    .header {
-      background: rgba(15, 23, 42, 0.8);
-      backdrop-filter: blur(20px);
-      padding: 1.5rem 2rem;
-      border-bottom: 1px solid rgba(129, 140, 248, 0.2);
-    }
-
-    .header-content {
-      max-width: 1400px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .logo {
-      font-size: 1.5rem;
-      font-weight: 700;
-      background: linear-gradient(135deg, #c7d2fe, #818cf8);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      text-decoration: none;
-    }
-
-    .nav-links a {
-      color: #cbd5e1;
-      text-decoration: none;
-      margin-left: 2rem;
-      font-weight: 500;
-      transition: color 0.2s;
-    }
-
-    .nav-links a:hover {
-      color: #c7d2fe;
-    }
-
-    .container {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 3rem 2rem;
-    }
-
-    .search-section {
-      background: rgba(30, 41, 59, 0.6);
-      border: 1px solid rgba(129, 140, 248, 0.3);
-      border-radius: 16px;
-      padding: 2rem;
-      margin-bottom: 2rem;
-      backdrop-filter: blur(20px);
-    }
-
-    .search-box-container {
-      display: flex;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .search-box {
-      flex: 1;
-      display: flex;
-      background: rgba(15, 23, 42, 0.8);
-      border: 1px solid rgba(148, 163, 184, 0.3);
-      border-radius: 12px;
-      overflow: hidden;
-    }
-
-    .search-box input {
-      flex: 1;
-      padding: 1rem 1.5rem;
-      border: none;
-      background: transparent;
-      color: #e2e8f0;
-      font-size: 1rem;
-      outline: none;
-    }
-
-    .search-box input::placeholder {
-      color: #64748b;
-    }
-
-    .search-box button {
-      background: linear-gradient(135deg, #8b5cf6, #6366f1);
-      color: white;
-      border: none;
-      padding: 0 2rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-
-    .search-box button:hover {
-      background: linear-gradient(135deg, #7c3aed, #4f46e5);
-    }
-
-    .query-insights {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
-
-    .insight-badge {
-      background: rgba(129, 140, 248, 0.2);
-      border: 1px solid rgba(129, 140, 248, 0.4);
-      padding: 0.4rem 0.8rem;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      color: #c7d2fe;
-    }
-
-    .ai-agents {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 1.5rem;
-      margin-bottom: 2rem;
-    }
-
-    .agent-card {
-      background: rgba(30, 41, 59, 0.6);
-      border: 2px solid rgba(148, 163, 184, 0.2);
-      border-radius: 16px;
-      padding: 1.5rem;
-      cursor: pointer;
-      transition: all 0.3s;
-      backdrop-filter: blur(20px);
-    }
-
-    .agent-card:hover {
-      transform: translateY(-5px);
-      border-color: rgba(129, 140, 248, 0.5);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    }
-
-    .agent-card.active {
-      border-color: #818cf8;
-      background: rgba(129, 140, 248, 0.1);
-    }
-
-    .agent-icon {
-      font-size: 2.5rem;
-      margin-bottom: 0.8rem;
-    }
-
-    .agent-name {
-      font-size: 1.2rem;
-      font-weight: 600;
-      color: #c7d2fe;
-      margin-bottom: 0.5rem;
-    }
-
-    .agent-description {
-      font-size: 0.9rem;
-      color: #94a3b8;
-      line-height: 1.5;
-    }
-
-    .results-section {
-      background: rgba(30, 41, 59, 0.4);
-      border: 1px solid rgba(148, 163, 184, 0.2);
-      border-radius: 16px;
-      padding: 2rem;
-      backdrop-filter: blur(20px);
-    }
-
-    .result-card {
-      background: rgba(15, 23, 42, 0.6);
-      border: 1px solid rgba(148, 163, 184, 0.2);
-      border-radius: 12px;
-      padding: 1.5rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .result-card h3 {
-      color: #c7d2fe;
-      margin-bottom: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .result-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1rem;
-    }
-
-    .data-item {
-      background: rgba(30, 41, 59, 0.4);
-      padding: 0.8rem;
-      border-radius: 8px;
-      border: 1px solid rgba(148, 163, 184, 0.1);
-    }
-
-    .data-label {
-      font-size: 0.8rem;
-      color: #94a3b8;
-      text-transform: uppercase;
-      margin-bottom: 0.3rem;
-    }
-
-    .data-value {
-      color: #e2e8f0;
-      font-weight: 500;
-    }
-
-    .ai-insight {
-      background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(99, 102, 241, 0.1));
-      border: 1px solid rgba(139, 92, 246, 0.3);
-      border-radius: 12px;
-      padding: 1.5rem;
-      margin-top: 1.5rem;
-    }
-
-    .ai-insight h4 {
-      color: #c7d2fe;
-      margin-bottom: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .insight-list {
-      list-style: none;
-      padding: 0;
-    }
-
-    .insight-list li {
-      padding: 0.5rem 0;
-      color: #cbd5e1;
-      padding-left: 1.5rem;
-      position: relative;
-    }
-
-    .insight-list li:before {
-      content: '→';
-      position: absolute;
-      left: 0;
-      color: #818cf8;
-    }
-  </style>
-</head>
-<body>
-
-  <!-- Header -->
-  <div class="header">
-    <div class="header-content">
-      <a href="index.html" class="logo">🧬 MolecularMap</a>
-      <div class="nav-links">
-        <a href="index.html">Home</a>
-        <a href="search.php">Basic Search</a>
-        <a href="search_advanced.php">Advanced AI Search</a>
-      </div>
-    </div>
-  </div>
-
-  <!-- Main Container -->
-  <div class="container">
-    
-    <!-- Search Section -->
-    <div class="search-section">
-      <h1 style="color: #c7d2fe; margin-bottom: 1.5rem;">🤖 Advanced AI Search</h1>
-      
-      <form method="GET" action="search_advanced.php">
-        <div class="search-box-container">
-          <div class="search-box">
-            <input type="text" 
-                   name="q" 
-                   value="<?= htmlspecialchars($query) ?>" 
-                   placeholder="Enter molecule name, SMILES, disease, gene, or natural language query..."
-                   required>
-            <button type="submit">🔍 Search</button>
-          </div>
-        </div>
-        
-        <?php if ($query): 
-          $query_types = analyze_query($query);
-        ?>
-        <div class="query-insights">
-          <span style="color: #94a3b8; font-size: 0.9rem;">Detected query types:</span>
-          <?php foreach ($query_types as $type): ?>
-            <span class="insight-badge"><?= ucfirst($type) ?></span>
-          <?php endforeach; ?>
-        </div>
-        <?php endif; ?>
-      </form>
-    </div>
-
-    <!-- AI Agents Grid -->
-    <h2 style="color: #c7d2fe; margin-bottom: 1.5rem;">Select AI Agent</h2>
-    <div class="ai-agents">
-      <?php foreach ($ai_agents as $key => $agent_info): ?>
-        <a href="?q=<?= urlencode($query) ?>&agent=<?= $key ?>" style="text-decoration: none;">
-          <div class="agent-card <?= $agent === $key ? 'active' : '' ?>">
-            <div class="agent-icon"><?= $agent_info['icon'] ?></div>
-            <div class="agent-name"><?= $agent_info['name'] ?></div>
-            <div class="agent-description"><?= $agent_info['description'] ?></div>
-          </div>
-        </a>
-      <?php endforeach; ?>
-    </div>
-
-    <!-- Results Section -->
-    <?php if ($query): ?>
-    <div class="results-section">
-      <h2 style="color: #c7d2fe; margin-bottom: 1.5rem;">
-        <?= $ai_agents[$agent]['icon'] ?> 
-        Results from <?= $ai_agents[$agent]['name'] ?>
-      </h2>
-
-      <?php
-      // Route to appropriate agent
-      switch ($agent) {
-        case 'molecule':
-          $pubchem = fetch_pubchem_enhanced($query);
-          if ($pubchem && isset($pubchem['PropertyTable']['Properties'][0])):
-            $props = $pubchem['PropertyTable']['Properties'][0];
-      ?>
-          <div class="result-card">
-            <h3>🔬 Molecular Properties</h3>
-            <div class="result-grid">
-              <div class="data-item">
-                <div class="data-label">Molecular Formula</div>
-                <div class="data-value"><?= $props['MolecularFormula'] ?? 'N/A' ?></div>
-              </div>
-              <div class="data-item">
-                <div class="data-label">Molecular Weight</div>
-                <div class="data-value"><?= $props['MolecularWeight'] ?? 'N/A' ?> g/mol</div>
-              </div>
-              <div class="data-item">
-                <div class="data-label">IUPAC Name</div>
-                <div class="data-value"><?= $props['IUPACName'] ?? 'N/A' ?></div>
-              </div>
-              <div class="data-item">
-                <div class="data-label">SMILES</div>
-                <div class="data-value" style="font-family: monospace; font-size: 0.85rem;"><?= $props['CanonicalSMILES'] ?? 'N/A' ?></div>
-              </div>
-            </div>
-          </div>
-
-          <div class="ai-insight">
-            <h4>🤖 AI Insights</h4>
-            <ul class="insight-list">
-              <li>Molecular complexity suggests <?= strlen($props['CanonicalSMILES'] ?? '') > 50 ? 'complex' : 'simple' ?> structure</li>
-              <li>Weight range indicates <?= ($props['MolecularWeight'] ?? 0) > 500 ? 'large' : 'small' ?> molecule classification</li>
-              <li>Suitable for <?= ($props['MolecularWeight'] ?? 0) < 500 ? 'oral bioavailability (Lipinski\'s Rule)' : 'specialized delivery methods' ?></li>
-            </ul>
-          </div>
-      <?php
-          endif;
-          break;
-
-        case 'patent':
-          $patents = fetch_patents($query);
-      ?>
-          <div class="result-card">
-            <h3>💡 Patent Search Results</h3>
-            <p style="color: #94a3b8;">Integration with USPTO and Google Patents API</p>
-            <div class="ai-insight" style="margin-top: 1rem;">
-              <h4>🤖 Innovation Finder</h4>
-              <p style="color: #cbd5e1;">
-                This agent will search across:
-              </p>
-              <ul class="insight-list">
-                <li>USPTO patent database</li>
-                <li>Google Patents</li>
-                <li>European Patent Office</li>
-                <li>Scientific publications (PubMed, arXiv)</li>
-                <li>Clinical trial registries</li>
-              </ul>
-            </div>
-          </div>
-      <?php
-          break;
-
-        default:
-          ?>
-          <div class="result-card">
-            <h3><?= $ai_agents[$agent]['icon'] ?> <?= $ai_agents[$agent]['name'] ?></h3>
-            <p style="color: #94a3b8; margin-bottom: 1rem;">
-              <?= $ai_agents[$agent]['description'] ?>
-            </p>
-            <div class="ai-insight">
-              <h4>🤖 Agent Capabilities</h4>
-              <p style="color: #cbd5e1; margin-bottom: 1rem;">
-                This specialized AI agent will analyze your query and provide:
-              </p>
-              <ul class="insight-list">
-                <li>Multi-database cross-referencing</li>
-                <li>Semantic similarity search</li>
-                <li>Predictive analytics</li>
-                <li>Literature mining and synthesis</li>
-                <li>Real-time data integration</li>
-              </ul>
-            </div>
-          </div>
-          <?php
+/* UniProt: proteins */
+$SOURCES['uniprot'] = [
+  'label' => 'UniProt (Proteins)',
+  'handler' => function($q, $limit = 5) {
+    $base = 'https://rest.uniprot.org/uniprotkb/search?format=json&size=' . (int)$limit . '&query=';
+    $j = fetch_json($base . rawurlencode($q));
+    $out = [];
+    if (!empty($j['results'])) {
+      foreach ($j['results'] as $r) {
+        $acc  = $r['primaryAccession'] ?? '';
+        $name = $r['proteinDescription']['recommendedName']['fullName']['value']
+                ?? ($r['uniProtkbId'] ?? 'Protein');
+        $out[] = [
+          'title' => "$name ($acc)",
+          'url'   => "https://www.uniprot.org/uniprotkb/" . rawurlencode($acc) . "/entry",
+          'meta'  => 'Protein • UniProt'
+        ];
       }
-      ?>
+    }
+    if (!$out) {
+      $out[] = [
+        'title' => 'Search on UniProt',
+        'url'   => 'https://www.uniprot.org/uniprotkb?query=' . rawurlencode($q),
+        'meta'  => 'No API hits • Fallback link'
+      ];
+    }
+    return $out;
+  }
+];
 
-    </div>
+/* PubMed: link out */
+$SOURCES['pubmed'] = [
+  'label' => 'PubMed (Literature)',
+  'handler' => function($q, $limit = 5) {
+    return [[
+      'title' => 'Search on PubMed',
+      'url'   => 'https://pubmed.ncbi.nlm.nih.gov/?term=' . rawurlencode($q),
+      'meta'  => 'Literature • PubMed'
+    ]];
+  }
+];
+
+/* ChEMBL: link out */
+$SOURCES['chembl'] = [
+  'label' => 'ChEMBL (Molecules/Drugs)',
+  'handler' => function($q, $limit = 5) {
+    return [[
+      'title' => 'Search on ChEMBL',
+      'url'   => 'https://www.ebi.ac.uk/chembl/g/#search_results/all/' . rawurlencode($q),
+      'meta'  => 'Molecules • ChEMBL'
+    ]];
+  }
+];
+
+/* KEGG: link out */
+$SOURCES['kegg'] = [
+  'label' => 'KEGG (Pathways)',
+  'handler' => function($q, $limit = 5) {
+    return [[
+      'title' => 'Search on KEGG',
+      'url'   => 'https://www.kegg.jp/kegg-bin/search?search_string=' . rawurlencode($q) . '&database=pathway',
+      'meta'  => 'Pathways • KEGG'
+    ]];
+  }
+];
+
+/* Auto (default): combine a few top sources */
+$AUTO_ENGINES = ['pubchem', 'uniprot', 'pubmed'];
+
+/** Read inputs */
+$q = isset($_GET['q']) ? trim((string)$_GET['q']) : '';
+$engine = isset($_GET['engine']) ? (string)$_GET['engine'] : '';
+if (!$engine || !isset($SOURCES[$engine])) {
+  $engine = 'auto';
+}
+
+/** Run search */
+$results = [];
+$error   = '';
+if ($q !== '') {
+  try {
+    if ($engine === 'auto') {
+      foreach ($AUTO_ENGINES as $e) {
+        $res = $SOURCES[$e]['handler']($q, 5);
+        if (is_array($res)) $results = array_merge($results, $res);
+      }
+    } else {
+      $res = $SOURCES[$engine]['handler']($q, 10);
+      if (is_array($res)) $results = $res;
+    }
+  } catch (Throwable $e) {
+    $error = 'Search error: ' . $e->getMessage();
+  }
+}
+
+/** Detect header/footer files to preserve your site chrome */
+$HAS_HEADER = file_exists(__DIR__ . '/header.php');
+$HAS_FOOTER = file_exists(__DIR__ . '/footer.php');
+
+if ($HAS_HEADER) {
+  include __DIR__ . '/header.php';
+} else {
+  // Minimal fallback header (only used if your header.php is missing)
+  ?><!doctype html>
+  <html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>MolecularMap – Advanced Search</title>
+    <style>
+      /* Tiny neutral fallback; your real site styles come from header.php */
+      body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial; margin:0; }
+      .container { max-width: 980px; margin: 24px auto; padding: 0 16px; }
+      .page-title { font-weight: 700; margin: 12px 0 16px; }
+      .search-row { display: grid; grid-template-columns: 1fr 220px auto; gap: 8px; }
+      .search-row input, .search-row select { padding: 10px; font-size: 15px; }
+      .search-row button { padding: 10px 14px; font-weight: 600; }
+      .results { margin-top: 14px; }
+      .result { padding: 10px 0; border-top: 1px solid #eee; }
+      .result:first-child { border-top: none; }
+      .result-title a { color: #0b5cff; text-decoration: none; font-weight: 600; }
+      .result-title a:hover { text-decoration: underline; }
+      .result-meta { color: #666; font-size: 13px; margin-top: 2px; }
+      .results-empty, .results-error { margin-top: 10px; color: #666; }
+      @media (max-width: 720px) { .search-row { grid-template-columns: 1fr; } }
+    </style>
+  </head><body><div class="container"><h1 class="page-title">Advanced Search</h1>
+  <?php
+}
+?>
+
+<div class="container" id="advanced-search-content">
+  <!-- Search row (keeps your styles if your CSS targets these classes/IDs) -->
+  <form method="get" action="search_advanced.php" class="search-row" aria-label="Advanced search">
+    <input
+      type="text"
+      name="q"
+      value="<?=h($q)?>"
+      placeholder="Search molecules, proteins, pathways, or literature…"
+      required
+      autocomplete="off"
+      aria-label="Search"
+      class="search-input"
+    />
+    <select name="engine" aria-label="Select source" class="search-select">
+      <option value="auto" <?= $engine==='auto' ? 'selected' : '' ?>>Auto (recommended)</option>
+      <?php foreach ($SOURCES as $key => $cfg): if ($key==='auto') continue; ?>
+        <option value="<?=h($key)?>" <?= $engine === $key ? 'selected' : '' ?>>
+          <?=h($cfg['label'])?>
+        </option>
+      <?php endforeach; ?>
+    </select>
+    <button type="submit" class="btn search-btn">Search</button>
+  </form>
+
+  <!-- Results immediately below the search box -->
+  <section id="results" class="results">
+    <?php if ($q === ''): ?>
+      <div class="results-empty">Enter a query to see results here.</div>
+    <?php else: ?>
+      <?php if ($error): ?>
+        <div class="results-error"><?=h($error)?></div>
+      <?php elseif (!$results): ?>
+        <div class="results-empty">No results for <strong><?=h($q)?></strong> (source: <?=h($engine === 'auto' ? 'Auto' : $SOURCES[$engine]['label'])?>).</div>
+      <?php else: ?>
+        <?php foreach ($results as $r): ?>
+          <div class="result">
+            <div class="result-title">
+              <a href="<?=h($r['url'] ?? '#')?>" target="_blank" rel="noopener noreferrer">
+                <?=h($r['title'] ?? 'Result')?>
+              </a>
+            </div>
+            <?php if (!empty($r['meta'])): ?>
+              <div class="result-meta"><?=h($r['meta'])?></div>
+            <?php endif; ?>
+          </div>
+        <?php endforeach; ?>
+      <?php endif; ?>
     <?php endif; ?>
+  </section>
+</div>
 
-  </div>
+<?php
+if ($HAS_FOOTER) {
+  include __DIR__ . '/footer.php';
+} else {
+  // Minimal fallback footer (only used if footer.php is missing)
+  ?></div></body></html><?php
+}
 
-</body>
-</html>

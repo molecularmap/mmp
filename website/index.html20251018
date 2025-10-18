@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MolecularMap – The ImageNet of Molecules</title>
+  <title>MolecularMap — The ImageNet of Molecules</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     
@@ -249,15 +249,15 @@
       width: 100%;
     }
 
-    /* Hero Section - REDUCED HEIGHT */
+    /* Hero Section */
     .hero {
       position: relative;
-      min-height: 75vh;
+      min-height: 95vh;
       display: flex;
       align-items: center;
       justify-content: center;
       text-align: center;
-      padding: 6rem 2rem 1rem;
+      padding: 6rem 2rem 2rem;
     }
 
     .hero-content {
@@ -407,13 +407,13 @@
       box-shadow: 0 0 20px rgba(139, 92, 246, 0.6);
     }
 
-    /* Features Section - REDUCED PADDING */
+    /* Features Section */
     .features {
       position: relative;
       z-index: 10;
       max-width: 1200px;
       margin: 0 auto;
-      padding: 2rem 2rem 4rem;
+      padding: 4rem 2rem;
     }
 
     .features-grid {
@@ -517,17 +517,17 @@
       font-family: 'Courier New', monospace;
     }
 
-    /* Famous Molecule Label - REDUCED SPACING */
+    /* Famous Molecule Label */
     .famous-label {
       position: relative;
-      margin: 1.5rem auto 0;
+      margin: 2.5rem auto 0;
       max-width: 800px;
       pointer-events: none;
       z-index: 5;
       text-align: center;
       opacity: 0;
       transition: opacity 0.8s ease-in-out;
-      min-height: 80px;
+      min-height: 100px;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -672,7 +672,7 @@
         </div>
       </div>
 
-      <!-- Famous Molecule Flash Label -->
+      <!-- Famous Molecule Flash Label (now anchored below search) -->
       <div class="famous-label" id="famous-label">
         <div class="molecule-name"></div>
         <div class="molecule-subtitle"></div>
@@ -696,7 +696,7 @@
       </div>
 
       <div class="feature-card" onclick="window.location.href='./topics/preventive.html'">
-        <div class="feature-icon">🎯</div>
+        <div class="feature-icon">🍎</div>
         <h3>Preventive Health</h3>
         <p>Discover molecules that support resilience and longevity—tracing how lifestyle, supplements, and molecular modulators protect against disease onset. Map antioxidants, metabolic regulators, and anti-aging compounds.</p>
       </div>
@@ -744,7 +744,7 @@
     <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
       <a href="./404.html" 
          style="background: linear-gradient(135deg, #8b5cf6, #6366f1); color: white; text-decoration: none; padding: 0.9rem 2rem; border-radius: 12px; font-weight: 600; transition: all 0.3s; display: inline-block; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);">
-         🔥 Download Academic Dataset
+         📥 Download Academic Dataset
       </a>
       <a href="mailto:licensing@molecularmap.com" 
          style="background: transparent; border: 2px solid #818cf8; color: #c7d2fe; text-decoration: none; padding: 0.9rem 2rem; border-radius: 12px; font-weight: 600; transition: all 0.3s; display: inline-block;">
@@ -756,7 +756,7 @@
   <!-- Footer -->
   <footer style="position: relative; z-index: 10; text-align: center; padding: 3rem 2rem; color: #64748b; border-top: 1px solid rgba(148, 163, 184, 0.1); background: rgba(0, 0, 8, 0.5); backdrop-filter: blur(10px);">
     <p style="margin-bottom: 0.5rem; color: #cbd5e1; font-size: 1.1rem;">
-      <strong>MolecularMap</strong> – The ImageNet of Molecules | © 2014 - 2025
+      <strong>MolecularMap</strong> — The ImageNet of Molecules | © 2014 - 2025
     </p>
     <p style="margin-bottom: 1rem;">
       A project by <a href="https://soundofmolecules.com" style="color: #818cf8; text-decoration: none;">Sound of Molecules</a>.  
@@ -770,13 +770,15 @@
   </footer>
 
   <script>
-    // Molecular database
+    // Expanded molecular database for galaxy effect
     const molecularDatabase = [
       // Drugs
       { name: 'Aspirin', formula: 'C9H8O4', color: '#f87171', size: 2.5, famous: true, tagline: 'The pain reliever that changed medicine' },
       { name: 'Penicillin', formula: 'C16H18N2O4S', color: '#f87171', size: 2.8, famous: true, tagline: 'The antibiotic that saved millions' },
       { name: 'Metformin', formula: 'C4H11N5', color: '#f87171', size: 2.5 },
       { name: 'Ibuprofen', formula: 'C13H18O2', color: '#f87171', size: 2 },
+      { name: 'Lisinopril', formula: 'C21H31N3O5', color: '#f87171', size: 1.5 },
+      { name: 'Atorvastatin', formula: 'C33H35FN2O5', color: '#f87171', size: 2 },
       { name: 'Morphine', formula: 'C17H19NO3', color: '#f87171', size: 2.2, famous: true, tagline: 'Ancient pain relief from poppy plants' },
       { name: 'Insulin', formula: 'C257H383N65O77S6', color: '#f87171', size: 2.5, famous: true, tagline: 'Life-saving diabetes treatment' },
       
@@ -785,36 +787,52 @@
       { name: 'Vitamin D3', formula: 'C27H44O', color: '#4ade80', size: 2 },
       { name: 'Vitamin B12', formula: 'C63H88CoN14O14P', color: '#4ade80', size: 1.8 },
       { name: 'Omega-3 DHA', formula: 'C22H32O2', color: '#4ade80', size: 2 },
+      { name: 'Folic Acid', formula: 'C19H19N7O6', color: '#4ade80', size: 1.7 },
+      { name: 'Vitamin E', formula: 'C29H50O2', color: '#4ade80', size: 1.9 },
+      { name: 'Biotin', formula: 'C10H16N2O3S', color: '#4ade80', size: 1.5 },
+      { name: 'Niacin', formula: 'C6H5NO2', color: '#4ade80', size: 1.4 },
       
       // Metabolites
       { name: 'Glucose', formula: 'C6H12O6', color: '#facc15', size: 2.5, famous: true, tagline: "Life's primary energy currency" },
       { name: 'Dopamine', formula: 'C8H11NO2', color: '#facc15', size: 2.2, famous: true, tagline: 'The reward molecule of motivation' },
       { name: 'Serotonin', formula: 'C10H12N2O', color: '#facc15', size: 2, famous: true, tagline: 'The happiness neurotransmitter' },
       { name: 'ATP', formula: 'C10H16N5O13P3', color: '#facc15', size: 2.3, famous: true, tagline: 'The molecular battery of life' },
+      { name: 'Creatine', formula: 'C4H9N3O2', color: '#facc15', size: 1.6 },
+      { name: 'L-Glutamine', formula: 'C5H10N2O3', color: '#facc15', size: 1.5 },
+      { name: 'Acetylcholine', formula: 'C7H16NO2', color: '#facc15', size: 1.8 },
+      { name: 'GABA', formula: 'C4H9NO2', color: '#facc15', size: 1.7 },
       
       // Natural Compounds
       { name: 'Caffeine', formula: 'C8H10N4O2', color: '#38bdf8', size: 2.2, famous: true, tagline: "The world's most popular stimulant" },
       { name: 'Curcumin', formula: 'C21H20O6', color: '#38bdf8', size: 2.3, famous: true, tagline: 'Ancient golden healing from turmeric' },
       { name: 'Resveratrol', formula: 'C14H12O3', color: '#38bdf8', size: 2.1, famous: true, tagline: 'Red wine longevity molecule' },
+      { name: 'Quercetin', formula: 'C15H10O7', color: '#38bdf8', size: 2 },
+      { name: 'EGCG', formula: 'C22H18O11', color: '#38bdf8', size: 1.9 },
+      { name: 'Gingerol', formula: 'C17H26O4', color: '#38bdf8', size: 1.6 },
+      { name: 'Lycopene', formula: 'C40H56', color: '#38bdf8', size: 1.8 },
       { name: 'Capsaicin', formula: 'C18H27NO3', color: '#38bdf8', size: 1.9, famous: true, tagline: "The heat in chili peppers" },
     ];
 
+    // Canvas setup
     const canvas = document.getElementById('galaxy-canvas');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
+    // Create MANY molecular particles (200+) for galaxy effect
     const molecules = [];
     const moleculeCount = 200;
 
     for (let i = 0; i < moleculeCount; i++) {
       const molData = molecularDatabase[i % molecularDatabase.length];
+      const size = molData.size * (0.8 + Math.random() * 0.4); // Vary sizes
+      
       molecules.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
         vx: (Math.random() - 0.5) * 0.3,
         vy: (Math.random() - 0.5) * 0.3,
-        radius: molData.size * (0.8 + Math.random() * 0.4),
+        radius: size,
         data: molData,
         index: i,
         twinkle: Math.random() * Math.PI * 2,
@@ -823,7 +841,7 @@
       });
     }
 
-    // Create connection network
+    // Create connection network (only nearby molecules)
     molecules.forEach((mol, i) => {
       const maxConnections = 3;
       let connectionCount = 0;
@@ -842,6 +860,7 @@
       });
     });
 
+    // Mouse tracking
     let mouseX = -1000;
     let mouseY = -1000;
     let hoveredMolecule = null;
@@ -887,11 +906,13 @@
       document.getElementById('tooltip').classList.remove('show');
     });
 
+    // Animation
     function animate() {
+      // Dark fade for trail effect
       ctx.fillStyle = 'rgba(0, 0, 8, 0.15)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Draw connections first (behind molecules)
+      // Draw semi-transparent connections FIRST (subtle, behind molecules)
       molecules.forEach(mol => {
         mol.connections.forEach(conn => {
           const target = molecules[conn.target];
@@ -901,21 +922,24 @@
           const dy = target.y - mol.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
 
+          // Only draw if reasonably close
           if (distance < 250) {
+            // Very subtle gradient line
             const gradient = ctx.createLinearGradient(mol.x, mol.y, target.x, target.y);
-            gradient.addColorStop(0, mol.data.color + '08');
-            gradient.addColorStop(0.5, mol.data.color + '15');
+            gradient.addColorStop(0, mol.data.color + '08'); // Very transparent
+            gradient.addColorStop(0.5, mol.data.color + '15'); // Slightly more visible in middle
             gradient.addColorStop(1, target.data.color + '08');
             
             ctx.strokeStyle = gradient;
             ctx.lineWidth = 0.5;
-            ctx.globalAlpha = 0.3 * (1 - distance / 250);
+            ctx.globalAlpha = 0.3 * (1 - distance / 250); // Fade with distance
             
             ctx.beginPath();
             ctx.moveTo(mol.x, mol.y);
             ctx.lineTo(target.x, target.y);
             ctx.stroke();
 
+            // Subtle pulsing effect
             const pulse = Math.sin(Date.now() / 2000 + conn.distance) * 0.2 + 0.3;
             ctx.globalAlpha = pulse * (1 - distance / 250);
             ctx.lineWidth = 0.8;
@@ -927,17 +951,20 @@
       });
 
       // Update and draw molecules
-      molecules.forEach((mol) => {
+      molecules.forEach((mol, i) => {
+        // Gentle drift movement
         mol.x += mol.vx;
         mol.y += mol.vy;
 
+        // Soft bounce at edges
         if (mol.x < 20 || mol.x > canvas.width - 20) mol.vx *= -0.95;
         if (mol.y < 20 || mol.y > canvas.height - 20) mol.vy *= -0.95;
 
+        // Keep in bounds
         mol.x = Math.max(20, Math.min(canvas.width - 20, mol.x));
         mol.y = Math.max(20, Math.min(canvas.height - 20, mol.y));
 
-        // Mouse repulsion
+        // Subtle mouse repulsion (molecules drift away from cursor)
         const dx = mol.x - mouseX;
         const dy = mol.y - mouseY;
         const distToMouse = Math.sqrt(dx * dx + dy * dy);
@@ -955,17 +982,36 @@
           mol.vy = (mol.vy / speed) * 1;
         }
 
+        // Update twinkle
         mol.twinkle += mol.twinkleSpeed;
-        const twinkleIntensity = Math.sin(mol.twinkle) * 0.3 + 0.7;
 
-        const outerGlow = ctx.createRadialGradient(mol.x, mol.y, 0, mol.x, mol.y, mol.radius * 4);
-        outerGlow.addColorStop(0, mol.data.color + '40');
+        // Large outer glow (cosmic halo)
+        const twinkleIntensity = Math.sin(mol.twinkle) * 0.3 + 0.7;
+        const glowRadius = mol.radius * 4;
+        
+        const outerGlow = ctx.createRadialGradient(mol.x, mol.y, 0, mol.x, mol.y, glowRadius);
+        outerGlow.addColorStop(0, mol.data.color + Math.floor(twinkleIntensity * 40).toString(16).padStart(2, '0'));
+        outerGlow.addColorStop(0.3, mol.data.color + '18');
+        outerGlow.addColorStop(0.7, mol.data.color + '08');
         outerGlow.addColorStop(1, mol.data.color + '00');
+        
         ctx.fillStyle = outerGlow;
         ctx.beginPath();
-        ctx.arc(mol.x, mol.y, mol.radius * 4, 0, Math.PI * 2);
+        ctx.arc(mol.x, mol.y, glowRadius, 0, Math.PI * 2);
         ctx.fill();
 
+        // Inner glow (brighter)
+        const innerGlow = ctx.createRadialGradient(mol.x, mol.y, 0, mol.x, mol.y, mol.radius * 2);
+        innerGlow.addColorStop(0, mol.data.color + 'CC');
+        innerGlow.addColorStop(0.5, mol.data.color + '60');
+        innerGlow.addColorStop(1, mol.data.color + '00');
+        
+        ctx.fillStyle = innerGlow;
+        ctx.beginPath();
+        ctx.arc(mol.x, mol.y, mol.radius * 2, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Core star particle
         ctx.fillStyle = mol.data.color;
         ctx.shadowBlur = 15 * twinkleIntensity;
         ctx.shadowColor = mol.data.color;
@@ -974,7 +1020,40 @@
         ctx.fill();
         ctx.shadowBlur = 0;
 
+        // Bright center point (twinkling star effect)
+        ctx.fillStyle = '#ffffff';
+        ctx.globalAlpha = twinkleIntensity * 0.9;
+        ctx.beginPath();
+        ctx.arc(mol.x, mol.y, mol.radius * 0.4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+
+        // Star flare lines (cross pattern for larger molecules)
+        if (mol.radius > 2 && twinkleIntensity > 0.8) {
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 0.5;
+          ctx.globalAlpha = (twinkleIntensity - 0.8) * 2;
+          
+          const flareLength = mol.radius * 2.5;
+          
+          // Horizontal
+          ctx.beginPath();
+          ctx.moveTo(mol.x - flareLength, mol.y);
+          ctx.lineTo(mol.x + flareLength, mol.y);
+          ctx.stroke();
+          
+          // Vertical
+          ctx.beginPath();
+          ctx.moveTo(mol.x, mol.y - flareLength);
+          ctx.lineTo(mol.x, mol.y + flareLength);
+          ctx.stroke();
+          
+          ctx.globalAlpha = 1;
+        }
+
+        // Highlight if hovered
         if (mol === hoveredMolecule) {
+          // Bright ring
           ctx.strokeStyle = '#ffffff';
           ctx.lineWidth = 2;
           ctx.shadowBlur = 20;
@@ -982,6 +1061,15 @@
           ctx.beginPath();
           ctx.arc(mol.x, mol.y, mol.radius + 4, 0, Math.PI * 2);
           ctx.stroke();
+          ctx.shadowBlur = 0;
+          
+          // Molecule name
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 14px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.shadowBlur = 8;
+          ctx.shadowColor = '#000000';
+          ctx.fillText(mol.data.name, mol.x, mol.y - 18);
           ctx.shadowBlur = 0;
 
           // Highlight connections
@@ -1007,60 +1095,118 @@
 
     animate();
 
-    // Famous molecule flash
+    // Famous molecule flash (every 8 seconds, not too often)
     const famousMolecules = molecularDatabase.filter(m => m.famous);
     
-    // Educational highlights
+    // Add educational famous items (reactions, elements, discoveries)
     const educationalHighlights = [
+      // Nobel Prize Discoveries
       { name: 'DNA Double Helix', tagline: '1962 Nobel Prize - Watson, Crick, Wilkins', type: 'nobel' },
       { name: 'PCR Technology', tagline: '1993 Nobel Prize - Kary Mullis', type: 'nobel' },
+      { name: 'Green Fluorescent Protein', tagline: '2008 Nobel Prize - Shimomura, Chalfie, Tsien', type: 'nobel' },
       { name: 'CRISPR-Cas9', tagline: '2020 Nobel Prize - Doudna & Charpentier', type: 'nobel' },
       { name: 'mRNA Vaccines', tagline: '2023 Nobel Prize - Karikó & Weissman', type: 'nobel' },
+      { name: 'Click Chemistry', tagline: '2022 Nobel Prize - Bertozzi, Meldal, Sharpless', type: 'nobel' },
+      
+      // Famous Reactions & Cycles
       { name: 'Photosynthesis', tagline: '6CO₂ + 6H₂O + Light → C₆H₁₂O₆ + 6O₂', type: 'reaction' },
       { name: 'Krebs Cycle', tagline: 'The citric acid cycle - cellular energy production', type: 'reaction' },
+      { name: 'Glycolysis', tagline: 'Breaking down glucose into pyruvate for energy', type: 'reaction' },
+      { name: 'Electron Transport Chain', tagline: 'The final stage of cellular respiration', type: 'reaction' },
+      { name: 'Calvin Cycle', tagline: 'Carbon fixation in photosynthesis', type: 'reaction' },
+      { name: 'Haber-Bosch Process', tagline: 'N₂ + 3H₂ → 2NH₃ - Feeding billions through ammonia', type: 'reaction' },
+      { name: 'Fischer-Tropsch', tagline: 'Converting coal to liquid fuels', type: 'reaction' },
+      
+      // Inorganic & Elements
       { name: 'Water (H₂O)', tagline: 'The universal solvent - foundation of life', type: 'inorganic' },
+      { name: 'Carbon Dioxide', tagline: 'CO₂ - Climate regulator and photosynthesis fuel', type: 'inorganic' },
+      { name: 'Ammonia (NH₃)', tagline: 'Essential for fertilizers and life', type: 'inorganic' },
+      { name: 'Sulfuric Acid', tagline: 'H₂SO₄ - The most produced industrial chemical', type: 'inorganic' },
+      { name: 'Sodium Chloride', tagline: 'NaCl - Table salt, essential electrolyte', type: 'inorganic' },
+      { name: 'Iron (Fe)', tagline: 'Hemoglobin carrier - oxygen transport in blood', type: 'element' },
+      { name: 'Calcium (Ca)', tagline: 'Bones, teeth, and cellular signaling', type: 'element' },
+      { name: 'Magnesium (Mg)', tagline: 'Center of chlorophyll - green plants', type: 'element' },
+      { name: 'Zinc (Zn)', tagline: 'Essential for 300+ enzymes', type: 'element' },
+      { name: 'Copper (Cu)', tagline: 'Electron transport and connective tissue', type: 'element' },
+      
+      // Metalorganic & Coordination
       { name: 'Hemoglobin', tagline: 'Iron-containing protein carrying oxygen', type: 'metalorganic' },
+      { name: 'Chlorophyll', tagline: 'Magnesium complex harvesting sunlight', type: 'metalorganic' },
+      { name: 'Vitamin B12', tagline: 'Cobalt-containing essential nutrient', type: 'metalorganic' },
+      { name: 'Cisplatin', tagline: 'Pt(NH₃)₂Cl₂ - Platinum cancer drug', type: 'metalorganic' },
+      { name: 'Ferrocene', tagline: 'Sandwich compound - organometallic chemistry', type: 'metalorganic' },
+      
+      // Foundational Biomolecules
       { name: 'DNA', tagline: 'Deoxyribonucleic acid - the blueprint of life', type: 'biomolecule' },
+      { name: 'RNA', tagline: 'Ribonucleic acid - genetic messenger', type: 'biomolecule' },
+      { name: 'Proteins', tagline: 'The molecular machines of life', type: 'biomolecule' },
+      { name: 'Lipids', tagline: 'Cell membranes and energy storage', type: 'biomolecule' },
+      { name: 'Carbohydrates', tagline: 'Energy currency and structural support', type: 'biomolecule' },
+      { name: 'Enzymes', tagline: 'Biological catalysts accelerating reactions', type: 'biomolecule' },
+      { name: 'Antibodies', tagline: 'Immune system defenders', type: 'biomolecule' },
+      { name: 'Neurotransmitters', tagline: 'Chemical messengers of the brain', type: 'biomolecule' },
+      
+      // Historic Molecules
+      { name: 'Urea', tagline: '1828 - First organic molecule synthesized (Wöhler)', type: 'historic' },
+      { name: 'Aspirin', tagline: '1899 - Bayer launches the wonder drug', type: 'historic' },
+      { name: 'Benzene', tagline: '1865 - Kekulé dreams of the ring structure', type: 'historic' },
+      { name: 'Buckminsterfullerene', tagline: 'C₆₀ - 1985 Nobel Prize discovery', type: 'historic' },
+      { name: 'Graphene', tagline: '2010 Nobel Prize - Revolutionary 2D material', type: 'historic' },
     ];
     
     const allHighlights = [...famousMolecules, ...educationalHighlights];
-    let currentIndex = 0;
+    let currentHighlightIndex = 0;
 
     function showFamousMolecule() {
       const famousLabel = document.getElementById('famous-label');
-      const mol = allHighlights[currentIndex];
+      const item = allHighlights[currentHighlightIndex];
       
-      famousLabel.querySelector('.molecule-name').textContent = mol.name;
-      famousLabel.querySelector('.molecule-subtitle').textContent = mol.tagline;
+      // Use molecule name or item name
+      const displayName = item.name || item.data?.name;
+      const displayTagline = item.tagline || item.data?.tagline;
       
-      // Type-specific styling
+      famousLabel.querySelector('.molecule-name').textContent = displayName;
+      famousLabel.querySelector('.molecule-subtitle').textContent = displayTagline;
+      
+      // Add type-specific styling
       const nameEl = famousLabel.querySelector('.molecule-name');
-      if (mol.type === 'nobel') {
-        nameEl.style.background = 'linear-gradient(135deg, #fbbf24, #f59e0b)';
-      } else if (mol.type === 'reaction') {
-        nameEl.style.background = 'linear-gradient(135deg, #34d399, #10b981)';
-      } else if (mol.type === 'inorganic') {
-        nameEl.style.background = 'linear-gradient(135deg, #60a5fa, #3b82f6)';
-      } else if (mol.type === 'metalorganic') {
-        nameEl.style.background = 'linear-gradient(135deg, #a78bfa, #8b5cf6)';
-      } else if (mol.type === 'biomolecule') {
-        nameEl.style.background = 'linear-gradient(135deg, #f472b6, #ec4899)';
+      if (item.type === 'nobel') {
+        nameEl.style.background = 'linear-gradient(135deg, #fbbf24, #f59e0b)'; // Gold
+      } else if (item.type === 'reaction') {
+        nameEl.style.background = 'linear-gradient(135deg, #34d399, #10b981)'; // Green
+      } else if (item.type === 'inorganic' || item.type === 'element') {
+        nameEl.style.background = 'linear-gradient(135deg, #60a5fa, #3b82f6)'; // Blue
+      } else if (item.type === 'metalorganic') {
+        nameEl.style.background = 'linear-gradient(135deg, #a78bfa, #8b5cf6)'; // Purple
+      } else if (item.type === 'biomolecule') {
+        nameEl.style.background = 'linear-gradient(135deg, #f472b6, #ec4899)'; // Pink
+      } else if (item.type === 'historic') {
+        nameEl.style.background = 'linear-gradient(135deg, #fb923c, #f97316)'; // Orange
       } else {
-        nameEl.style.background = 'linear-gradient(135deg, #fde047, #a5b4fc, #f87171)';
+        nameEl.style.background = 'linear-gradient(135deg, #fde047, #a5b4fc, #f87171)'; // Default
       }
       nameEl.style.webkitBackgroundClip = 'text';
       nameEl.style.webkitTextFillColor = 'transparent';
       
+      // Show
       famousLabel.classList.add('show');
       
-      setTimeout(() => famousLabel.classList.remove('show'), 3500);
+      // Hide after 3.5 seconds
+      setTimeout(() => {
+        famousLabel.classList.remove('show');
+      }, 3500);
       
-      currentIndex = (currentIndex + 1) % allHighlights.length;
+      // Next item
+      currentHighlightIndex = (currentHighlightIndex + 1) % allHighlights.length;
+      
+      // Show next one after 8 seconds
       setTimeout(showFamousMolecule, 8000);
     }
 
+    // Start after 3 seconds
     setTimeout(showFamousMolecule, 3000);
 
+    // Modal functions
     function openModal() {
       document.getElementById('modal').classList.add('active');
     }
@@ -1071,14 +1217,15 @@
       }
     }
 
-    window.addEventListener('resize', () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    });
-
     // Navbar scroll effect
     window.addEventListener('scroll', () => {
       document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 100);
+    });
+
+    // Resize handling
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
     });
 
     // Prevent scrolling modal content from closing
@@ -1087,46 +1234,60 @@
     });
   </script>
 
-  <script>
-    // === MolecularMap: Search Box Wiring ===
-    (function () {
-      var box = document.querySelector('.search-box');
-      if (!box) return;
+<script>
+// === MolecularMap: Search Box Wiring (drop-in) ===
+// Works with the existing hero search markup:
+//   <div class="search-box">
+//     <input type="text" placeholder="Search molecules, diseases, pathways...">
+//     <button>Search</button>
+//   </div>
 
-      var input = box.querySelector('input[type="text"], input:not([type])');
-      var button = box.querySelector('button');
+(function () {
+  // Find the first .search-box that contains an input + button
+  var box = document.querySelector('.search-box');
+  if (!box) return;
 
-      if (!input || !button) return;
+  var input = box.querySelector('input[type="text"], input:not([type])');
+  var button = box.querySelector('button');
 
-      function go(q) {
-        var query = (q || '').trim();
-        if (!query) return;
-        var url = 'search.php?q=' + encodeURIComponent(query);
-        window.location.href = url;
-      }
+  if (!input || !button) return;
 
-      button.addEventListener('click', function (e) {
-        e.preventDefault();
-        go(input.value);
-      });
+  // Helper to navigate to search.php?q=<query>
+  function go(q) {
+    var query = (q || '').trim();
+    if (!query) return; // block empty
+    // Use relative path so it works on either / or subdirs
+    var url = 'search.php?q=' + encodeURIComponent(query);
+    window.location.href = url;
+  }
 
-      input.addEventListener('keydown', function (e) {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          go(input.value);
-        }
-      });
+  // Click handler for the button
+  button.addEventListener('click', function (e) {
+    e.preventDefault();
+    go(input.value);
+  });
 
-      window.addEventListener('keydown', function (e) {
-        var ae = document.activeElement;
-        var typing = ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.tagName === 'SELECT' || ae.isContentEditable);
-        if (e.key === '/' && !typing) {
-          e.preventDefault();
-          input.focus();
-        }
-      });
-    })();
-  </script>
+  // Support Enter from the input field
+  input.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      go(input.value);
+    }
+  });
+
+  // Nice UX: focus with "/" like many sites
+  window.addEventListener('keydown', function (e) {
+    // ignore if user is typing in an input/textarea/select
+    var ae = document.activeElement;
+    var typing = ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.tagName === 'SELECT' || ae.isContentEditable);
+    if (e.key === '/' && !typing) {
+      e.preventDefault();
+      input.focus();
+    }
+  });
+})();
+</script>
+
 
 </body>
 </html>
